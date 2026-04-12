@@ -4,7 +4,7 @@ use std::fs::{self, File};
 use std::path::{Path, PathBuf};
 
 const INPUT_POSTS_DIR: &str = "posts/";
-const OUTPUT_POSTS_DIR: &str = "build/posts";
+const OUTPUT_POSTS_DIR: &str = "build/posts/";
 
 pub fn get_files_from_posts_dir() -> Result<Vec<PathBuf>> {
     let mut post_fpaths: Vec<PathBuf> = vec![];
