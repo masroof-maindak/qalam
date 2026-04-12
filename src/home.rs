@@ -14,6 +14,7 @@ pub struct HomePage {
     github: String,
     desc: String,
     num_recent_posts: u8,
+    css_file_path: Option<String>,
 }
 
 pub fn create_html_str(hp: &HomePage) -> String {
@@ -26,9 +27,36 @@ pub fn create_html_str(hp: &HomePage) -> String {
             title {(hp.page_title)}
         }
 
-        h1 {(hp.name)}
-        p {(hp.desc)}
+        section #home-info {
+            img {}
+            div {
+                span #name {(hp.name)}
+                span #username {(hp.username)}
+            }
+            div #bio {(hp.bio)}
+        }
+        
+        section #home-links {
+            div #left {
+                a .home-link href="/posts/index.html" {"posts"};
+                a .home-link href="/projects/index.html" {"projects"};
+            }
+            div #right {
+                // mail svg & link
+                // a href="mailto:"{(hp.email)}
+                // GH svg & link
+            }
+        }
+        
+        section #home-brief {
+            p {(hp.desc)}
+        }
 
+        section #home-post-list {
+            // TODO: loop over hp.num_recent_posts posts
+
+            a href="/posts/" {"more »"}
+        }
     };
 
     markup.into_string()
