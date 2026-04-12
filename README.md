@@ -12,7 +12,8 @@ Swampy static site generator.
 ├── posts/
 │   └── *.md
 ├── themes/
-│   └── *.css
+│   ├── override.css
+│   └── style.css
 ├── index.toml
 ├── posts.toml
 └── projects.toml
@@ -28,6 +29,7 @@ build/
 ├── projects/
 │   └── index.html
 ├── themes/
+│   └── style.css
 └── index.html
 ```
 
@@ -38,10 +40,20 @@ build/
 - [x] Projects page; TOML page config & project array -> HTML
   - Would we need an HTML templater like `maud`? Yes, and it's glorious.
 - [x] Parse index.toml for homepage
-- [ ] Home page HTML
-- [ ] CSS class assignment to homepage elements
-- [ ] Read MD frontmatter for post sorting on posts/index.html
+- [x] Home page HTML
+- [x] CSS class assignment to homepage elements
+- [ ] CSS for home page
+- [ ] CSS class assignment to projects/post pages
+- [ ] CSS for posts/projects page
+- [ ] Read MD frontmatter for post sorting on posts index & home
+  - Maintain state? Or better yet -- just re-scan everything honestly (for now)
+- [ ] CSS for post entry
 - [ ] Syntax highlighting via `syntect`
   - [ ] Swamp light/dark themes OOTB
-  - [ ] Configurable themes as part of cfg.toml
-- [ ] Post tagging via MD frontmatter & HTML output
+  - [ ] Configurable themes as part of index.toml
+- [ ] flags
+  - [ ] `<path>` -- chdir to given path and build there; '.' by default
+  - [ ] `build` -- default argument; self-explanatory
+  - [ ] `serve` -- watches changes and re-builds, while serving over HTTP
+- [ ] TOC for blog posts
+- [ ] Post tagging via MD frontmatter & output HTML tag pages
