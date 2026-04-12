@@ -1,4 +1,5 @@
 use anyhow::{Context, Result};
+use maud::{DOCTYPE, html};
 use serde::{Deserialize, Serialize};
 use std::fs;
 
@@ -30,8 +31,33 @@ pub fn parse_projs_index_file() -> Result<ProjectPage> {
     Ok(projs_page_cfg)
 }
 
-pub fn generate_projs_page_html(_p: &ProjectPage) -> Result<String> {
-    todo!()
+pub fn generate_projs_page_html(pp: &ProjectPage) -> String {
+    // TODO: Assign CSS classes!
+
+    // TODO: create build/ dir if doesn't exist
+
+    let markup = html! {
+        (DOCTYPE)
+        html {
+            meta charset="utf-8";
+            title {(pp.title)}
+        }
+
+        h1 {(pp.title)}
+        p {(pp.desc)}
+
+        @for proj in &pp.projects {
+            h3 {(proj.name)}
+            p {(proj.desc)}
+            p {
+                @for tag in &proj.tags {
+                    {"#" (tag) " "}
+                }
+            }
+        }
+    };
+
+    markup.into_string()
 }
 
 pub fn write_projs_html_page(projs_page_html: String) -> Result<()> {

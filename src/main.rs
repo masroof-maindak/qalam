@@ -8,7 +8,7 @@ fn main() -> Result<()> {
 
     // Projects
     let proj_info_file = projects::parse_projs_index_file()?;
-    let projs_page_html = projects::generate_projs_page_html(&proj_info_file)?;
+    let projs_page_html = projects::generate_projs_page_html(&proj_info_file);
     projects::write_projs_html_page(projs_page_html)?;
 
     // Posts
