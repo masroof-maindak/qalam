@@ -1,4 +1,4 @@
-use anyhow::{Context, Result, bail};
+use anyhow::{Result, bail};
 use maud::{DOCTYPE, html};
 use pulldown_cmark::{Parser, html};
 use serde::Deserialize;
@@ -8,7 +8,7 @@ use std::path::{Path, PathBuf};
 pub const IN_POSTS_CFG_PATH: &str = "posts.toml";
 pub const OUT_POSTS_PATH: &str = "build/posts/index.html";
 const IN_POSTS_DIR: &str = "posts/";
-const OUT_POSTS_DIR: &str = "build/posts/";
+pub const OUT_POSTS_DIR: &str = "build/posts/";
 
 #[derive(Deserialize, Debug)]
 
@@ -39,8 +39,6 @@ pub fn get_files_from_posts_dir() -> Result<Vec<PathBuf>> {
 
 pub fn convert_all_posts_to_html(post_fpaths: Vec<PathBuf>) -> Result<()> {
     let out_dir = Path::new(OUT_POSTS_DIR);
-    std::fs::create_dir_all(out_dir)
-        .with_context(|| format!("Failed to create dir {OUT_POSTS_DIR}"))?;
 
     for fpath in post_fpaths {
         if !fpath.is_file() {

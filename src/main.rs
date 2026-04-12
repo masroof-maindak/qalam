@@ -7,8 +7,17 @@ pub mod utils;
 
 use utils::{TomlFileType, parse_toml_file, write_html};
 
+const OUT_DIRS: [&str; 3] = [
+    posts::OUT_POSTS_DIR,
+    projects::OUT_PROJ_DIR,
+    "build/themes/",
+];
+
 fn main() -> Result<()> {
-    // TODO: create build/ dir
+    // Ensure output dirs
+    for d in OUT_DIRS {
+        std::fs::create_dir_all(d)?;
+    }
 
     // Homepage
     let home_cfg_file = parse_toml_file(TomlFileType::Home, home::IN_HOME_CFG_PATH)?;

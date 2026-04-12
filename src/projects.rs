@@ -3,6 +3,7 @@ use serde::Deserialize;
 
 pub const IN_PROJS_CFG_PATH: &str = "projects.toml";
 pub const OUT_PROJ_PATH: &str = "build/projects/index.html";
+pub const OUT_PROJ_DIR: &str = "build/projects/";
 
 #[derive(Deserialize, Debug)]
 struct Project {
