@@ -1,9 +1,8 @@
 use anyhow::{Context, Result};
 use serde::{Deserialize, Serialize};
-use std::fs::{self, File};
-use std::io::Write;
+use std::fs;
 
-const IN_PROJS_FPATH: &str = "projects.html";
+const IN_PROJS_FPATH: &str = "projects.toml";
 const OUT_PROJ_FPATH: &str = "build/projects.html";
 
 #[derive(Serialize, Deserialize, Debug)]
@@ -36,11 +35,6 @@ pub fn generate_projs_page_html(_p: &ProjectPage) -> Result<String> {
 }
 
 pub fn write_projs_html_page(projs_page_html: String) -> Result<()> {
-    let mut projs_output_file = File::create(OUT_PROJ_FPATH)
-        .with_context(|| format!("[PROJ] Failed to create {OUT_PROJ_FPATH}."))?;
-
-    write!(projs_output_file, "{}", projs_page_html)
-        .with_context(|| format!("[PROJ] Failed to write HTML to {OUT_PROJ_FPATH}"))?;
-
-    Ok(())
+    fs::write(OUT_PROJ_FPATH, projs_page_html)
+        .with_context(|| format!("[PROJ] Failed to write HTML to {OUT_PROJ_FPATH}"))
 }
