@@ -1,28 +1,46 @@
-use serde::{Serialize, Deserialize};
+use anyhow::{Context, Result};
+use serde::{Deserialize, Serialize};
+use std::fs::{self, File};
+use std::io::Write;
 
-const OUTPUT_PROJECTS_FPATH: &str = "build/projects.html";
-const INPUT_PROJECTS_FILE: &str = "build/projects.html";
+const IN_PROJS_FPATH: &str = "projects.html";
+const OUT_PROJ_FPATH: &str = "build/projects.html";
 
 #[derive(Serialize, Deserialize, Debug)]
 struct Project {
-	title: String,
-    bio: String,
-	url: String,
+    name: String,
+    desc: String,
+    url: String,
+    tags: Vec<String>,
 }
 
 #[derive(Serialize, Deserialize, Debug)]
 pub struct ProjectPage {
     title: String,
-    bio: String,
-	projs: Vec<Project>,
+    desc: String,
+    projects: Vec<Project>,
 }
 
-// TODO: output projects.html from aforementioned
+pub fn parse_projs_index_file() -> Result<ProjectPage> {
+    let projs_page_toml = fs::read_to_string(IN_PROJS_FPATH)
+        .with_context(|| format!("[PROJ] Failed to read {IN_PROJS_FPATH}."))?;
 
-pub fn parse_projs_index_file() -> std::io::Result<ProjectPage> {
-	todo!()
+    let projs_page_cfg: ProjectPage =
+        toml::from_str(&projs_page_toml).context("[PROJ] Failed to parse projects file.")?;
+
+    Ok(projs_page_cfg)
 }
 
-pub fn generate_projs_page_html(_p: &ProjectPage) -> std::io::Result<()> {
-	todo!()
+pub fn generate_projs_page_html(_p: &ProjectPage) -> Result<String> {
+    todo!()
+}
+
+pub fn write_projs_html_page(projs_page_html: String) -> Result<()> {
+    let mut projs_output_file = File::create(OUT_PROJ_FPATH)
+        .with_context(|| format!("[PROJ] Failed to create {OUT_PROJ_FPATH}."))?;
+
+    write!(projs_output_file, "{}", projs_page_html)
+        .with_context(|| format!("[PROJ] Failed to write HTML to {OUT_PROJ_FPATH}"))?;
+
+    Ok(())
 }
