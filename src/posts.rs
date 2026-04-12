@@ -1,17 +1,29 @@
 use anyhow::{Context, Result, bail};
+use maud::{DOCTYPE, html};
 use pulldown_cmark::{Parser, html};
+use serde::Deserialize;
 use std::fs::{self, File};
 use std::path::{Path, PathBuf};
 
-const INPUT_POSTS_DIR: &str = "posts/";
-const OUTPUT_POSTS_DIR: &str = "build/posts/";
+pub const IN_POSTS_CFG_PATH: &str = "posts.toml";
+pub const OUT_POSTS_PATH: &str = "build/posts/index.html";
+const IN_POSTS_DIR: &str = "posts/";
+const OUT_POSTS_DIR: &str = "build/posts/";
+
+#[derive(Deserialize, Debug)]
+
+pub struct PostsPage {
+    page_title: String,
+    title: String,
+    desc: String,
+}
 
 pub fn get_files_from_posts_dir() -> Result<Vec<PathBuf>> {
     let mut post_fpaths: Vec<PathBuf> = vec![];
-    let posts_dir = Path::new(INPUT_POSTS_DIR);
+    let posts_dir = Path::new(IN_POSTS_DIR);
 
     if !posts_dir.is_dir() {
-        bail!("{INPUT_POSTS_DIR} doesn't exist or isn't a directory.");
+        bail!("{IN_POSTS_DIR} doesn't exist or isn't a directory.");
     }
 
     for entry in fs::read_dir(posts_dir)? {
@@ -26,9 +38,9 @@ pub fn get_files_from_posts_dir() -> Result<Vec<PathBuf>> {
 }
 
 pub fn convert_all_posts_to_html(post_fpaths: Vec<PathBuf>) -> Result<()> {
-    let out_dir = Path::new(OUTPUT_POSTS_DIR);
+    let out_dir = Path::new(OUT_POSTS_DIR);
     std::fs::create_dir_all(out_dir)
-        .with_context(|| format!("Failed to create dir {OUTPUT_POSTS_DIR}"))?;
+        .with_context(|| format!("Failed to create dir {OUT_POSTS_DIR}"))?;
 
     for fpath in post_fpaths {
         if !fpath.is_file() {
@@ -53,4 +65,23 @@ pub fn convert_all_posts_to_html(post_fpaths: Vec<PathBuf>) -> Result<()> {
     }
 
     Ok(())
+}
+
+pub fn create_html_str(pp: &PostsPage) -> String {
+    // TODO: Assign CSS classes!
+
+    let markup = html! {
+        (DOCTYPE)
+        html {
+            meta charset="utf-8";
+            title {(pp.page_title)}
+        }
+
+        h1 {(pp.title)}
+        p {(pp.desc)}
+
+        // TODO: create post sections via loop...
+    };
+
+    markup.into_string()
 }

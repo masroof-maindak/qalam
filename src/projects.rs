@@ -1,12 +1,10 @@
-use anyhow::{Context, Result};
 use maud::{DOCTYPE, html};
-use serde::{Deserialize, Serialize};
-use std::fs;
+use serde::Deserialize;
 
-const IN_PROJS_FPATH: &str = "projects.toml";
-const OUT_PROJ_FPATH: &str = "build/projects.html";
+pub const IN_PROJS_CFG_PATH: &str = "projects.toml";
+pub const OUT_PROJ_PATH: &str = "build/projects/index.html";
 
-#[derive(Serialize, Deserialize, Debug)]
+#[derive(Deserialize, Debug)]
 struct Project {
     name: String,
     desc: String,
@@ -14,40 +12,29 @@ struct Project {
     tags: Vec<String>,
 }
 
-#[derive(Serialize, Deserialize, Debug)]
+#[derive(Deserialize, Debug)]
 pub struct ProjectPage {
+    page_title: String,
     title: String,
     desc: String,
     projects: Vec<Project>,
 }
 
-pub fn parse_projs_index_file() -> Result<ProjectPage> {
-    let projs_page_toml = fs::read_to_string(IN_PROJS_FPATH)
-        .with_context(|| format!("[PROJ] Failed to read {IN_PROJS_FPATH}."))?;
-
-    let projs_page_cfg: ProjectPage =
-        toml::from_str(&projs_page_toml).context("[PROJ] Failed to parse projects file.")?;
-
-    Ok(projs_page_cfg)
-}
-
-pub fn generate_projs_page_html(pp: &ProjectPage) -> String {
+pub fn create_html_str(pp: &ProjectPage) -> String {
     // TODO: Assign CSS classes!
-
-    // TODO: create build/ dir if doesn't exist
 
     let markup = html! {
         (DOCTYPE)
         html {
             meta charset="utf-8";
-            title {(pp.title)}
+            title {(pp.page_title)}
         }
 
         h1 {(pp.title)}
         p {(pp.desc)}
 
         @for proj in &pp.projects {
-            h3 {(proj.name)}
+            h3 {(proj.name) ", -- " (proj.url)}
             p {(proj.desc)}
             p {
                 @for tag in &proj.tags {
@@ -58,9 +45,4 @@ pub fn generate_projs_page_html(pp: &ProjectPage) -> String {
     };
 
     markup.into_string()
-}
-
-pub fn write_projs_html_page(projs_page_html: String) -> Result<()> {
-    fs::write(OUT_PROJ_FPATH, projs_page_html)
-        .with_context(|| format!("[PROJ] Failed to write HTML to {OUT_PROJ_FPATH}"))
 }

@@ -18,7 +18,9 @@ img/*
 - [x] Read posts/ dir.
 - [x] Projects page; TOML page config & project array -> HTML
   - Would we need an HTML templater like `maud`? Yes, and it's glorious.
-- [ ] Parse index.toml for homepage
+- [x] Parse index.toml for homepage
+- [ ] Posts page w/ sorted list of posts
+- [ ] Home page HTML
 - [ ] CSS class assignment to home/about-page elements
 - [ ] Read MD frontmatter for post sorting
 - [ ] Syntax highlighting via `syntect`
