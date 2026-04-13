@@ -45,8 +45,10 @@ build/
 - [ ] CSS for home page
 - [ ] CSS class assignment to projects/post pages
 - [ ] CSS for posts/projects page
-- [ ] Read MD frontmatter for post sorting on posts index & home
+- [x] Read MD frontmatter
   - Maintain state? Or better yet -- just re-scan everything honestly (for now)
+  - [ ] Use for post sorting via date
+  - [ ] Prepend to page's HTML
 - [ ] CSS for post entry
 - [ ] Syntax highlighting via `syntect`
   - [ ] Swamp light/dark themes OOTB
