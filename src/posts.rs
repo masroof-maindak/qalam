@@ -1,6 +1,7 @@
-use anyhow::{Result, bail};
+use anyhow::{Context, Result, bail};
+use gray_matter::{Matter, engine::TOML};
 use maud::{DOCTYPE, html};
-use pulldown_cmark::{Parser, html};
+use pulldown_cmark::{Options, Parser, html};
 use serde::Deserialize;
 use std::fs::{self, File};
 use std::path::{Path, PathBuf};
@@ -16,6 +17,12 @@ pub struct PostsPage {
     page_title: String,
     title: String,
     desc: String,
+}
+
+#[derive(Deserialize, Debug)]
+struct FrontMatter {
+    title: String,
+    date: String,
 }
 
 pub fn get_files_from_posts_dir() -> Result<Vec<PathBuf>> {
@@ -45,6 +52,7 @@ pub fn convert_all_posts_to_html(post_fpaths: Vec<PathBuf>) -> Result<()> {
             continue;
         }
 
+        // Extract stem for out-file name
         let stem = match fpath.file_stem().and_then(|s| s.to_str()) {
             Some(s) => s,
             None => {
@@ -53,13 +61,21 @@ pub fn convert_all_posts_to_html(post_fpaths: Vec<PathBuf>) -> Result<()> {
             }
         };
 
+        // Extract frontmatter
+        let markdown_input = fs::read_to_string(&fpath)?;
+        let matter = Matter::<TOML>::new();
+        let md_doc = matter
+            .parse::<FrontMatter>(&markdown_input)
+            .with_context(|| format!("Failed to extract frontmatter from {:?}", fpath))?;
+
+        // Create output file
         let mut out_fpath = out_dir.join(stem);
         out_fpath.set_extension("html");
         let out_file = File::create(out_fpath)?;
-
-        let markdown_input = fs::read_to_string(fpath)?;
-        let parser = Parser::new(markdown_input.as_str());
+        let parser = Parser::new_ext(&md_doc.content, Options::all());
         html::write_html_io(out_file, parser)?;
+
+        // TODO: prepend metadata to page HTML
     }
 
     Ok(())
