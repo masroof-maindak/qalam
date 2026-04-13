@@ -1,12 +1,17 @@
 use anyhow::{Context, Result, bail};
+use maud::{DOCTYPE, Markup, html};
 use std::fs;
+use std::path::Path;
 
 use crate::{home, posts, projects};
 
-pub fn write_html(html: String, out_path: &str) -> Result<()> {
+pub fn write_html(html: String, out_path: &dyn AsRef<Path>) -> Result<()> {
     // TODO: sanitize HTML via ammonia?
 
-    fs::write(out_path, html).with_context(|| format!("Failed to write HTML to {out_path}"))
+    fs::write(out_path, html)
+        .with_context(|| format!("Failed to write HTML to {:#?}", out_path.as_ref()))?;
+
+    Ok(())
 }
 
 #[derive(Debug)]
@@ -61,5 +66,13 @@ pub fn parse_toml_file(tf: TomlFileType, path: &str) -> Result<TomlCfg> {
         TomlFileType::Posts => Ok(TomlCfg::Post(toml::from_str::<posts::PostsPage>(
             &toml_str,
         )?)),
+    }
+}
+
+pub fn page_header(page_title: &str) -> Markup {
+    html! {
+        (DOCTYPE)
+        meta charset="utf-8";
+        title { (page_title) }
     }
 }

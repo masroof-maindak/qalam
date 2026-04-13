@@ -47,8 +47,8 @@ build/
 - [ ] CSS for posts/projects page
 - [x] Read MD frontmatter
   - Maintain state? Or better yet -- just re-scan everything honestly (for now)
-  - [ ] Use for post sorting via date
-  - [ ] Prepend to page's HTML
+  - [x] Prepend to page's HTML
+  - [ ] Use to present posts, sorted by date, on posts/index.html
 - [ ] CSS for post entry
 - [ ] Syntax highlighting via `syntect`
   - [ ] Swamp light/dark themes OOTB

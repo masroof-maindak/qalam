@@ -35,7 +35,7 @@ pub fn create_html_str(hp: &HomePage) -> String {
             }
             div #bio {(hp.bio)}
         }
-        
+
         section #home-links {
             div #left {
                 a .home-link href="/posts/index.html" {"posts"};
@@ -47,7 +47,7 @@ pub fn create_html_str(hp: &HomePage) -> String {
                 // GH svg & link
             }
         }
-        
+
         section #home-brief {
             p {(hp.desc)}
         }
