@@ -5,7 +5,9 @@ use maud::html;
 use pulldown_cmark::{Options, Parser, html};
 use serde::Deserialize;
 use std::fs;
+use std::iter::zip;
 use std::path::{Path, PathBuf};
+use std::slice::Iter;
 
 use crate::utils;
 
@@ -54,8 +56,7 @@ pub fn get_files_from_posts_dir() -> Result<Vec<PathBuf>> {
     Ok(post_fpaths)
 }
 
-// TODO: refactor this down into smaller chunks
-fn convert_md_post_to_html_str(fpath: &PathBuf) -> Result<String> {
+pub fn generate_html_str(fpath: &PathBuf) -> Result<String> {
     // Extract frontmatter
     let markdown_input = fs::read_to_string(&fpath)?;
     let matter = Matter::<TOML>::new();
@@ -89,8 +90,8 @@ fn convert_md_post_to_html_str(fpath: &PathBuf) -> Result<String> {
     let parser = Parser::new_ext(&md_doc.content, Options::all());
     let mut note_content: String = generate_header(note_md);
     html::write_html_fmt(&mut note_content, parser)?;
-    // CHECK: how to associate metadata w/ note file?
 
+    utils::write_html(note_content, &out_fpath.as_path())?;
     Ok(note_content)
 }
 
@@ -101,27 +102,37 @@ fn extract_stem_from_fpath(fpath: &PathBuf) -> Result<&str> {
     ))
 }
 
-pub fn generate_html_for_all_posts(post_fpaths: Vec<PathBuf>) -> Result<()> {
+pub fn generate_iters(post_fpaths: &Vec<PathBuf>) -> Result<Iter<PathBuf>> {
     let out_dir = Path::new(OUT_POSTS_DIR);
 
-    for fpath in post_fpaths {
-        if !fpath.is_file() {
-            continue;
-        }
+    let post_fpaths_it = post_fpaths.iter();
 
-        // Extract stem for out-file name
+    // FIXME: result inside .map()
+    let post_out_paths_it = post_fpaths_it.map(|fpath| {
         let stem = match extract_stem_from_fpath(&fpath) {
             Ok(s) => s,
-            Err(e) => {
-                eprintln!("{e}");
-                continue;
-            }
+            Err(e) => bail!("Failed to extract stem from {:#?}", fpath),
         };
 
         let mut out_fpath = out_dir.join(stem);
         out_fpath.set_extension("html");
+        out_fpath
+    }).collect()::Vec<PathBuf>?;
 
-        let note_content = match convert_md_post_to_html_str(&fpath) {
+    Ok(post_out_paths_it)
+}
+
+pub fn generate_html_for_all_posts(post_fpaths: &Vec<PathBuf>) -> Result<()> {
+    let out_dir = Path::new(OUT_POSTS_DIR);
+
+    let post_out_fpaths_it = generate_iters(post_fpaths)?;
+
+    for (fpath, out_fpath) in zip(post_fpaths, post_out_fpaths_it) {
+        if !fpath.is_file() {
+            continue;
+        }
+
+        let note_content = match generate_html_str(&fpath) {
             Ok(s) => s,
             Err(e) => {
                 eprintln!("Failed to convert {:#?} to HTML str {e}", &fpath);
@@ -144,15 +155,17 @@ fn generate_header(note_md: NoteMetadata) -> String {
     .into_string()
 }
 
-pub fn create_html_str(pp: &PostsPage) -> String {
+pub fn create_index_html_str(pp: &PostsPage, post_fpaths: &Vec<PathBuf>) -> String {
     // TODO: Assign CSS classes!
+
+    let _post_out_paths_it = generate_iters(post_fpaths);
 
     let markup = html! {
         (utils::page_header(&pp.page_title))
         h1 {(pp.title)}
         p {(pp.desc)}
 
-        // TODO: create post sections via loop; name + date w/ anchor
+        // TODO: create post sections via loop; need metadata and output path
     };
 
     markup.into_string()

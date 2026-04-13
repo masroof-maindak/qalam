@@ -47,6 +47,11 @@ build/
 - [ ] CSS for posts/projects page
 - [x] Read MD frontmatter
   - Maintain state? Or better yet -- just re-scan everything honestly (for now)
+    - No, let's keep all note-relevant state inside a dedicated struct
+      comprising a map
+    - This has the added benefit of allowing us to update only the relevant file
+      when `serve`-ing later on
+    - State management be damned; there are way too many points of failure
   - [x] Prepend to page's HTML
   - [ ] Use to present posts, sorted by date, on posts/index.html
 - [ ] CSS for post entry
@@ -56,6 +61,6 @@ build/
 - [ ] flags
   - [ ] `<path>` -- chdir to given path and build there; '.' by default
   - [ ] `build` -- default argument; self-explanatory
-  - [ ] `serve` -- watches changes and re-builds, while serving over HTTP
+  - [ ] ~~`serve` -- watches changes and re-builds, while serving over HTTP~~
 - [ ] TOC for blog posts
 - [ ] Post tagging via MD frontmatter & output HTML tag pages

@@ -31,11 +31,11 @@ fn main() -> Result<()> {
 
     // Posts
     let post_fpaths = posts::get_files_from_posts_dir()?;
-    posts::generate_html_for_all_posts(post_fpaths)?;
+    posts::generate_html_for_all_posts(&post_fpaths)?;
 
     // Posts - Index
     let posts_cfg_file = parse_toml_file(TomlFileType::Posts, posts::IN_POSTS_CFG_PATH)?;
-    let posts_page_html = posts::create_html_str(&posts_cfg_file.into_post()?);
+    let posts_page_html = posts::create_index_html_str(&posts_cfg_file.into_post()?, &post_fpaths);
     write_html(posts_page_html, &posts::OUT_POSTS_PATH)?;
 
     Ok(())
