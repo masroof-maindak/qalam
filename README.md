@@ -59,6 +59,6 @@ build/
 - [ ] Syntax highlighting via `syntect`
   - [ ] Swamp light/dark themes OOTB
   - [ ] Configurable themes as part of index.toml
-- [ ] `<path>` flag -- chdir to given path and build there; '.' by default
+- [x] `<dir>` flag -- chdir to given path and build there
 - [ ] TOC for blog posts
 - [ ] Post tagging via MD frontmatter & output HTML tag pages

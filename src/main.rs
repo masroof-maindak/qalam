@@ -1,4 +1,6 @@
 use anyhow::Result;
+use std::env;
+// use std::path::Path;
 
 pub mod home;
 pub mod posts;
@@ -14,6 +16,15 @@ const OUT_DIRS: [&str; 3] = [
 ];
 
 fn main() -> Result<()> {
+    // Chdir if provided
+    let args: Vec<String> = env::args().collect();
+    if args.len() > 2 {
+        eprintln!("Usage: {} <dir>", args[0]);
+        std::process::exit(1);
+    } else if args.len() == 2 {
+        std::env::set_current_dir(&args[1])?;
+    }
+
     // Ensure output dirs
     for d in OUT_DIRS {
         std::fs::create_dir_all(d)?;
