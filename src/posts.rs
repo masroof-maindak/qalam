@@ -169,15 +169,23 @@ pub fn create_index_html_str(pp: &PostsPage, post_fpaths: &Vec<PathBuf>) -> Resu
 
     let post_out_paths = generate_out_path_vec(post_fpaths)?;
 
+    // TODO: sort posts
+
     let markup = html! {
         (utils::page_header(&pp.page_title))
         h1 {(pp.title)}
         p {(pp.desc)}
 
-        @for (fpath, _out_path) in zip(post_fpaths, post_out_paths) {
-            @let (_note_md, _) = extract_metadata_and_content(fpath)?;
+        div .post-list {
+            @for (fpath, out_path) in zip(post_fpaths, post_out_paths) {
+                @let (note_md, _) = extract_metadata_and_content(fpath)?;
+                // TODO: make this less nasty
+                @let rel_url = out_path.file_name().unwrap().to_str().unwrap();
 
-            // TODO: create post sections; need metadata
+                a .post-list-entry href={(rel_url)} {(note_md.title)}
+                span {(note_md.date)}
+                br;
+            }
         }
 
     };
