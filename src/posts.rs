@@ -1,12 +1,11 @@
 use anyhow::{Context, Result, anyhow, bail};
+use camino::{Utf8Path, Utf8PathBuf};
 use chrono::NaiveDate;
 use gray_matter::{Matter, ParsedEntity, engine::TOML};
 use itertools::Itertools;
 use maud::html;
 use pulldown_cmark::{Options, Parser, html};
 use serde::Deserialize;
-// use std::cmp::Ordering;
-use camino::{Utf8Path, Utf8PathBuf};
 use std::fs::read_to_string;
 use std::iter::zip;
 
@@ -33,16 +32,10 @@ struct FrontMatter {
 
 #[derive(Debug, Ord, Eq, PartialOrd, PartialEq)]
 struct NoteMetadata {
-    // Generated using frontmatter
+    // Generated from FrontMatter
     title: String,
     date: chrono::NaiveDate,
 }
-
-// impl Ord for NoteMetadata {
-//     fn cmp(&self, other: &Self) -> Ordering {
-//         self.date.cmp(&other.date)
-//     }
-// }
 
 pub fn get_files_from_posts_dir() -> Result<Vec<Utf8PathBuf>> {
     let mut post_fpaths: Vec<Utf8PathBuf> = vec![];
@@ -143,7 +136,7 @@ pub fn generate_out_path_vec(post_fpaths: &[Utf8PathBuf]) -> Result<Vec<Utf8Path
         .collect()
 }
 
-pub fn generate_html_for_all_posts(post_fpaths: &Vec<Utf8PathBuf>) -> Result<()> {
+pub fn generate_html_files_all_posts(post_fpaths: &Vec<Utf8PathBuf>) -> Result<()> {
     let post_out_fpaths = generate_out_path_vec(post_fpaths)?;
 
     for (fpath, out_fpath) in zip(post_fpaths, post_out_fpaths) {
@@ -170,20 +163,24 @@ fn generate_header(note_md: NoteMetadata) -> String {
         (utils::page_header(&note_md.title))
         h1 {(note_md.title)}
         span {(note_md.date)}
+        // TODO: add tags here, eventually
     )
     .into_string()
 }
 
-pub fn argsort<T: Ord>(data: &[T]) -> Vec<usize> {
-    let mut indices = (0..data.len()).collect::<Vec<_>>();
-    indices.sort_by_key(|&i| &data[i]);
-    indices
-}
-
-pub fn create_index_html_str(pp: &PostsPage, post_fpaths: &Vec<Utf8PathBuf>) -> Result<String> {
+pub fn create_index_html_str(pp: &PostsPage, post_fpaths: &[Utf8PathBuf]) -> Result<String> {
     // TODO: Assign CSS classes!
 
     let post_out_paths = generate_out_path_vec(post_fpaths)?;
+    let post_out_fnames = post_out_paths
+        .iter()
+        .filter_map(|fpath| match fpath.file_name() {
+            Some(s) => Some(s),
+            None => {
+                eprintln!("[POSTS] failed to extract filename from path {fpath}");
+                None
+            }
+        });
 
     let post_metadatas = post_fpaths
         .iter()
@@ -191,7 +188,7 @@ pub fn create_index_html_str(pp: &PostsPage, post_fpaths: &Vec<Utf8PathBuf>) -> 
         .collect::<Result<Vec<(NoteMetadata, ParsedEntity<FrontMatter>)>>>()?;
 
     let out_path_metadata_it =
-        zip(post_out_paths, post_metadatas).sorted_by_key(|(_, md)| md.0.date);
+        zip(post_out_fnames, post_metadatas).sorted_by_key(|(_, md)| md.0.date);
 
     let markup = html! {
         (utils::page_header(&pp.page_title))
@@ -199,19 +196,12 @@ pub fn create_index_html_str(pp: &PostsPage, post_fpaths: &Vec<Utf8PathBuf>) -> 
         p {(pp.desc)}
 
         div .post-list {
-            @for (out_path, md) in out_path_metadata_it {
-                @if let Some (fname) = out_path.file_name() {
-                    a .post-list-entry href={(fname)} {(md.0.title)}
-                    span {(md.0.date)}
-                    br;
-                } @else {
-                    // no way to print error
-                    // TODO: move metadata extraction outside -- need to do this for sorting anyway
-                    continue;
-                }
+            @for (rel_url, md) in out_path_metadata_it {
+                a .post-list-entry href={(rel_url)} {(md.0.title)}
+                span {(md.0.date)}
+                br;
             }
         }
-
     };
 
     Ok(markup.into_string())

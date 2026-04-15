@@ -31,7 +31,7 @@ fn main() -> Result<()> {
 
     // Posts
     let post_fpaths = posts::get_files_from_posts_dir()?;
-    posts::generate_html_for_all_posts(&post_fpaths)?;
+    posts::generate_html_files_all_posts(&post_fpaths)?;
 
     // Posts - Index
     let posts_cfg_file = parse_toml_file(TomlFileType::Posts, posts::IN_POSTS_CFG_PATH)?;
