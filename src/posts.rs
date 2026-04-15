@@ -179,12 +179,16 @@ pub fn create_index_html_str(pp: &PostsPage, post_fpaths: &Vec<PathBuf>) -> Resu
         div .post-list {
             @for (fpath, out_path) in zip(post_fpaths, post_out_paths) {
                 @let (note_md, _) = extract_metadata_and_content(fpath)?;
-                // TODO: make this less nasty
-                @let rel_url = out_path.file_name().unwrap().to_str().unwrap();
 
-                a .post-list-entry href={(rel_url)} {(note_md.title)}
-                span {(note_md.date)}
-                br;
+                @if let Some(rel_url) = out_path.file_name().and_then(|p| p.to_str()) {
+                    a .post-list-entry href={(rel_url)} {(note_md.title)}
+                    span {(note_md.date)}
+                    br;
+                } @else {
+                    // no way to print error
+                    // TODO: move metadata extraction outside -- need to do this for sorting anyway
+                    continue;
+                }
             }
         }
 
