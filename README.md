@@ -54,7 +54,7 @@ build/
     - State management be damned; there are way too many points of failure
   - [x] Prepend to page's HTML
   - [x] Use to present posts, \*, on posts/index.html
-    - [ ] sorted by date
+    - [x] sorted by date
 - [ ] CSS for post entry
 - [ ] Syntax highlighting via `syntect`
   - [ ] Swamp light/dark themes OOTB
