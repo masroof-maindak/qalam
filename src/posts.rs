@@ -7,7 +7,6 @@ use serde::Deserialize;
 use std::fs;
 use std::iter::zip;
 use std::path::{Path, PathBuf};
-use std::slice::Iter;
 
 use crate::utils;
 
@@ -56,9 +55,9 @@ pub fn get_files_from_posts_dir() -> Result<Vec<PathBuf>> {
     Ok(post_fpaths)
 }
 
-pub fn generate_html_str(fpath: &PathBuf) -> Result<String> {
+pub fn generate_html_str(fpath: &Path, out_path: &Path) -> Result<String> {
     // Extract frontmatter
-    let markdown_input = fs::read_to_string(&fpath)?;
+    let markdown_input = fs::read_to_string(fpath)?;
     let matter = Matter::<TOML>::new();
     let md_doc = matter
         .parse::<FrontMatter>(&markdown_input)
@@ -91,7 +90,7 @@ pub fn generate_html_str(fpath: &PathBuf) -> Result<String> {
     let mut note_content: String = generate_header(note_md);
     html::write_html_fmt(&mut note_content, parser)?;
 
-    utils::write_html(note_content, &out_fpath.as_path())?;
+    utils::write_html(&note_content, &out_path)?;
     Ok(note_content)
 }
 
@@ -102,37 +101,33 @@ fn extract_stem_from_fpath(fpath: &PathBuf) -> Result<&str> {
     ))
 }
 
-pub fn generate_iters(post_fpaths: &Vec<PathBuf>) -> Result<Iter<PathBuf>> {
+pub fn generate_out_path_vec(post_fpaths: &[PathBuf]) -> Result<Vec<PathBuf>> {
     let out_dir = Path::new(OUT_POSTS_DIR);
 
-    let post_fpaths_it = post_fpaths.iter();
+    post_fpaths
+        .iter()
+        .map(|fpath| {
+            let stem = match extract_stem_from_fpath(fpath) {
+                Ok(s) => s,
+                Err(e) => bail!("Failed to extract stem from {:#?}: {e}", fpath),
+            };
 
-    // FIXME: result inside .map()
-    let post_out_paths_it = post_fpaths_it.map(|fpath| {
-        let stem = match extract_stem_from_fpath(&fpath) {
-            Ok(s) => s,
-            Err(e) => bail!("Failed to extract stem from {:#?}", fpath),
-        };
-
-        let mut out_fpath = out_dir.join(stem);
-        out_fpath.set_extension("html");
-        out_fpath
-    }).collect()::Vec<PathBuf>?;
-
-    Ok(post_out_paths_it)
+            let mut out_fpath = out_dir.join(stem);
+            out_fpath.set_extension("html");
+            Ok(out_fpath)
+        })
+        .collect()
 }
 
 pub fn generate_html_for_all_posts(post_fpaths: &Vec<PathBuf>) -> Result<()> {
-    let out_dir = Path::new(OUT_POSTS_DIR);
-
-    let post_out_fpaths_it = generate_iters(post_fpaths)?;
+    let post_out_fpaths_it = generate_out_path_vec(post_fpaths)?;
 
     for (fpath, out_fpath) in zip(post_fpaths, post_out_fpaths_it) {
         if !fpath.is_file() {
             continue;
         }
 
-        let note_content = match generate_html_str(&fpath) {
+        let note_content = match generate_html_str(fpath, &out_fpath) {
             Ok(s) => s,
             Err(e) => {
                 eprintln!("Failed to convert {:#?} to HTML str {e}", &fpath);
@@ -140,7 +135,7 @@ pub fn generate_html_for_all_posts(post_fpaths: &Vec<PathBuf>) -> Result<()> {
             }
         };
 
-        utils::write_html(note_content, &out_fpath.as_path())?;
+        utils::write_html(&note_content, &out_fpath.as_path())?;
     }
 
     Ok(())
@@ -155,18 +150,21 @@ fn generate_header(note_md: NoteMetadata) -> String {
     .into_string()
 }
 
-pub fn create_index_html_str(pp: &PostsPage, post_fpaths: &Vec<PathBuf>) -> String {
+pub fn create_index_html_str(pp: &PostsPage, post_fpaths: &Vec<PathBuf>) -> Result<String> {
     // TODO: Assign CSS classes!
 
-    let _post_out_paths_it = generate_iters(post_fpaths);
+    let post_out_paths = generate_out_path_vec(post_fpaths)?;
 
     let markup = html! {
         (utils::page_header(&pp.page_title))
         h1 {(pp.title)}
         p {(pp.desc)}
 
-        // TODO: create post sections via loop; need metadata and output path
+        @for (_fpath, _out_path) in zip(post_fpaths, post_out_paths) {
+            // TODO: create post sections; need metadata
+        }
+
     };
 
-    markup.into_string()
+    Ok(markup.into_string())
 }

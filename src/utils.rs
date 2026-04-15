@@ -1,11 +1,10 @@
+use crate::{home, posts, projects};
 use anyhow::{Context, Result, bail};
 use maud::{DOCTYPE, Markup, html};
 use std::fs;
 use std::path::Path;
 
-use crate::{home, posts, projects};
-
-pub fn write_html(html: String, out_path: &dyn AsRef<Path>) -> Result<()> {
+pub fn write_html(html: &str, out_path: &dyn AsRef<Path>) -> Result<()> {
     // TODO: sanitize HTML via ammonia?
 
     fs::write(out_path, html)
