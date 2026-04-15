@@ -1,12 +1,14 @@
 use anyhow::{Context, Result, anyhow, bail};
 use chrono::NaiveDate;
 use gray_matter::{Matter, ParsedEntity, engine::TOML};
+use itertools::Itertools;
 use maud::html;
 use pulldown_cmark::{Options, Parser, html};
 use serde::Deserialize;
-use std::fs;
+// use std::cmp::Ordering;
+use camino::{Utf8Path, Utf8PathBuf};
+use std::fs::read_to_string;
 use std::iter::zip;
-use std::path::{Path, PathBuf};
 
 use crate::utils;
 
@@ -29,34 +31,40 @@ struct FrontMatter {
     date: String, // toml::value::Date doesn't work for some reason. At least not for my desired format (YYYY-MM-DD), which is all I tested.
 }
 
-#[derive(Debug)]
+#[derive(Debug, Ord, Eq, PartialOrd, PartialEq)]
 struct NoteMetadata {
     // Generated using frontmatter
     title: String,
     date: chrono::NaiveDate,
 }
 
-pub fn get_files_from_posts_dir() -> Result<Vec<PathBuf>> {
-    let mut post_fpaths: Vec<PathBuf> = vec![];
-    let posts_dir = Path::new(IN_POSTS_DIR);
+// impl Ord for NoteMetadata {
+//     fn cmp(&self, other: &Self) -> Ordering {
+//         self.date.cmp(&other.date)
+//     }
+// }
+
+pub fn get_files_from_posts_dir() -> Result<Vec<Utf8PathBuf>> {
+    let mut post_fpaths: Vec<Utf8PathBuf> = vec![];
+    let posts_dir = Utf8Path::new(IN_POSTS_DIR);
 
     if !posts_dir.is_dir() {
-        bail!("{IN_POSTS_DIR} doesn't exist or isn't a directory.");
+        bail!("[POSTS] {IN_POSTS_DIR} doesn't exist or isn't a directory.");
     }
 
-    for entry in fs::read_dir(posts_dir)? {
+    for entry in posts_dir.read_dir_utf8()? {
         let entry = entry?;
         let fpath = entry.path();
-        if fpath.extension().and_then(|s| s.to_str()) == Some("md") {
-            post_fpaths.push(fpath)
+        if fpath.extension() == Some("md") {
+            post_fpaths.push(Utf8PathBuf::from(fpath))
         }
     }
 
     Ok(post_fpaths)
 }
 
-fn extract_frontmatter(fpath: &Path) -> Result<ParsedEntity<FrontMatter>> {
-    let markdown_input = fs::read_to_string(fpath)?;
+fn extract_frontmatter(fpath: &Utf8Path) -> Result<ParsedEntity<FrontMatter>> {
+    let markdown_input = read_to_string(fpath)?;
     let matter = Matter::<TOML>::new();
     let md_doc = matter
         .parse::<FrontMatter>(&markdown_input)
@@ -65,7 +73,7 @@ fn extract_frontmatter(fpath: &Path) -> Result<ParsedEntity<FrontMatter>> {
 }
 
 fn convert_frontmatter_to_metadata(
-    fpath: &Path,
+    fpath: &Utf8Path,
     md_doc: &ParsedEntity<FrontMatter>,
 ) -> Result<NoteMetadata> {
     let note_md = match &md_doc.data {
@@ -92,13 +100,15 @@ fn convert_frontmatter_to_metadata(
     Ok(note_md)
 }
 
-fn extract_metadata_and_content(fpath: &Path) -> Result<(NoteMetadata, ParsedEntity<FrontMatter>)> {
+fn extract_metadata_and_content(
+    fpath: &Utf8Path,
+) -> Result<(NoteMetadata, ParsedEntity<FrontMatter>)> {
     let fm = extract_frontmatter(fpath)?;
     let note_md = convert_frontmatter_to_metadata(fpath, &fm)?;
     Ok((note_md, fm))
 }
 
-pub fn generate_html_str(fpath: &Path) -> Result<String> {
+pub fn generate_html_str(fpath: &Utf8Path) -> Result<String> {
     let (note_md, fm) = extract_metadata_and_content(fpath)?;
 
     let parser = Parser::new_ext(&fm.content, Options::all());
@@ -108,15 +118,15 @@ pub fn generate_html_str(fpath: &Path) -> Result<String> {
     Ok(note_content)
 }
 
-fn extract_stem_from_fpath(fpath: &PathBuf) -> Result<&str> {
-    fpath.file_stem().and_then(|s| s.to_str()).ok_or(anyhow!(
+fn extract_stem_from_fpath(fpath: &Utf8PathBuf) -> Result<&str> {
+    fpath.file_stem().ok_or(anyhow!(
         "[POSTS] Failed to extract fname from path: {:#?}",
         fpath
     ))
 }
 
-pub fn generate_out_path_vec(post_fpaths: &[PathBuf]) -> Result<Vec<PathBuf>> {
-    let out_dir = Path::new(OUT_POSTS_DIR);
+pub fn generate_out_path_vec(post_fpaths: &[Utf8PathBuf]) -> Result<Vec<Utf8PathBuf>> {
+    let out_dir = Utf8Path::new(OUT_POSTS_DIR);
 
     post_fpaths
         .iter()
@@ -133,7 +143,7 @@ pub fn generate_out_path_vec(post_fpaths: &[PathBuf]) -> Result<Vec<PathBuf>> {
         .collect()
 }
 
-pub fn generate_html_for_all_posts(post_fpaths: &Vec<PathBuf>) -> Result<()> {
+pub fn generate_html_for_all_posts(post_fpaths: &Vec<Utf8PathBuf>) -> Result<()> {
     let post_out_fpaths = generate_out_path_vec(post_fpaths)?;
 
     for (fpath, out_fpath) in zip(post_fpaths, post_out_fpaths) {
@@ -164,12 +174,24 @@ fn generate_header(note_md: NoteMetadata) -> String {
     .into_string()
 }
 
-pub fn create_index_html_str(pp: &PostsPage, post_fpaths: &Vec<PathBuf>) -> Result<String> {
+pub fn argsort<T: Ord>(data: &[T]) -> Vec<usize> {
+    let mut indices = (0..data.len()).collect::<Vec<_>>();
+    indices.sort_by_key(|&i| &data[i]);
+    indices
+}
+
+pub fn create_index_html_str(pp: &PostsPage, post_fpaths: &Vec<Utf8PathBuf>) -> Result<String> {
     // TODO: Assign CSS classes!
 
     let post_out_paths = generate_out_path_vec(post_fpaths)?;
 
-    // TODO: sort posts
+    let post_metadatas = post_fpaths
+        .iter()
+        .map(|f| extract_metadata_and_content(f))
+        .collect::<Result<Vec<(NoteMetadata, ParsedEntity<FrontMatter>)>>>()?;
+
+    let out_path_metadata_it =
+        zip(post_out_paths, post_metadatas).sorted_by_key(|(_, md)| md.0.date);
 
     let markup = html! {
         (utils::page_header(&pp.page_title))
@@ -177,12 +199,10 @@ pub fn create_index_html_str(pp: &PostsPage, post_fpaths: &Vec<PathBuf>) -> Resu
         p {(pp.desc)}
 
         div .post-list {
-            @for (fpath, out_path) in zip(post_fpaths, post_out_paths) {
-                @let (note_md, _) = extract_metadata_and_content(fpath)?;
-
-                @if let Some(rel_url) = out_path.file_name().and_then(|p| p.to_str()) {
-                    a .post-list-entry href={(rel_url)} {(note_md.title)}
-                    span {(note_md.date)}
+            @for (out_path, md) in out_path_metadata_it {
+                @if let Some (fname) = out_path.file_name() {
+                    a .post-list-entry href={(fname)} {(md.0.title)}
+                    span {(md.0.date)}
                     br;
                 } @else {
                     // no way to print error
