@@ -53,14 +53,12 @@ build/
       when `serve`-ing later on
     - State management be damned; there are way too many points of failure
   - [x] Prepend to page's HTML
-  - [ ] Use to present posts, sorted by date, on posts/index.html
+  - [x] Use to present posts, \*, on posts/index.html
+    - [ ] sorted by date
 - [ ] CSS for post entry
 - [ ] Syntax highlighting via `syntect`
   - [ ] Swamp light/dark themes OOTB
   - [ ] Configurable themes as part of index.toml
-- [ ] flags
-  - [ ] `<path>` -- chdir to given path and build there; '.' by default
-  - [ ] `build` -- default argument; self-explanatory
-  - [ ] ~~`serve` -- watches changes and re-builds, while serving over HTTP~~
+- [ ] `<path>` flag -- chdir to given path and build there; '.' by default
 - [ ] TOC for blog posts
 - [ ] Post tagging via MD frontmatter & output HTML tag pages
