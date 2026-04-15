@@ -1,6 +1,6 @@
 use anyhow::{Context, Result, anyhow, bail};
 use chrono::NaiveDate;
-use gray_matter::{Matter, engine::TOML};
+use gray_matter::{Matter, ParsedEntity, engine::TOML};
 use maud::html;
 use pulldown_cmark::{Options, Parser, html};
 use serde::Deserialize;
@@ -55,16 +55,20 @@ pub fn get_files_from_posts_dir() -> Result<Vec<PathBuf>> {
     Ok(post_fpaths)
 }
 
-pub fn generate_html_str(fpath: &Path, out_path: &Path) -> Result<String> {
-    // Extract frontmatter
+fn extract_frontmatter(fpath: &Path) -> Result<ParsedEntity<FrontMatter>> {
     let markdown_input = fs::read_to_string(fpath)?;
     let matter = Matter::<TOML>::new();
     let md_doc = matter
         .parse::<FrontMatter>(&markdown_input)
         .with_context(|| format!("[POSTS] Failed to extract frontmatter from {:?}", fpath))?;
+    Ok(md_doc)
+}
 
-    // Convert frontmatter to metadata
-    let note_md = match md_doc.data {
+fn convert_frontmatter_to_metadata(
+    fpath: &Path,
+    md_doc: &ParsedEntity<FrontMatter>,
+) -> Result<NoteMetadata> {
+    let note_md = match &md_doc.data {
         Some(fm) => {
             let naive_date =
                 NaiveDate::parse_from_str(&fm.date, "%Y-%m-%d").with_context(|| {
@@ -75,7 +79,7 @@ pub fn generate_html_str(fpath: &Path, out_path: &Path) -> Result<String> {
                 })?;
 
             NoteMetadata {
-                title: fm.title,
+                title: fm.title.clone(),
                 date: naive_date,
             }
         }
@@ -85,12 +89,22 @@ pub fn generate_html_str(fpath: &Path, out_path: &Path) -> Result<String> {
         ),
     };
 
-    // Create output file
-    let parser = Parser::new_ext(&md_doc.content, Options::all());
+    Ok(note_md)
+}
+
+fn extract_metadata_and_content(fpath: &Path) -> Result<(NoteMetadata, ParsedEntity<FrontMatter>)> {
+    let fm = extract_frontmatter(fpath)?;
+    let note_md = convert_frontmatter_to_metadata(fpath, &fm)?;
+    Ok((note_md, fm))
+}
+
+pub fn generate_html_str(fpath: &Path) -> Result<String> {
+    let (note_md, fm) = extract_metadata_and_content(fpath)?;
+
+    let parser = Parser::new_ext(&fm.content, Options::all());
     let mut note_content: String = generate_header(note_md);
     html::write_html_fmt(&mut note_content, parser)?;
 
-    utils::write_html(&note_content, &out_path)?;
     Ok(note_content)
 }
 
@@ -120,14 +134,14 @@ pub fn generate_out_path_vec(post_fpaths: &[PathBuf]) -> Result<Vec<PathBuf>> {
 }
 
 pub fn generate_html_for_all_posts(post_fpaths: &Vec<PathBuf>) -> Result<()> {
-    let post_out_fpaths_it = generate_out_path_vec(post_fpaths)?;
+    let post_out_fpaths = generate_out_path_vec(post_fpaths)?;
 
-    for (fpath, out_fpath) in zip(post_fpaths, post_out_fpaths_it) {
+    for (fpath, out_fpath) in zip(post_fpaths, post_out_fpaths) {
         if !fpath.is_file() {
             continue;
         }
 
-        let note_content = match generate_html_str(fpath, &out_fpath) {
+        let note_content = match generate_html_str(fpath) {
             Ok(s) => s,
             Err(e) => {
                 eprintln!("Failed to convert {:#?} to HTML str {e}", &fpath);
@@ -160,7 +174,9 @@ pub fn create_index_html_str(pp: &PostsPage, post_fpaths: &Vec<PathBuf>) -> Resu
         h1 {(pp.title)}
         p {(pp.desc)}
 
-        @for (_fpath, _out_path) in zip(post_fpaths, post_out_paths) {
+        @for (fpath, _out_path) in zip(post_fpaths, post_out_paths) {
+            @let (_note_md, _) = extract_metadata_and_content(fpath)?;
+
             // TODO: create post sections; need metadata
         }
 
