@@ -1,13 +1,14 @@
 use crate::{home, posts, projects};
+use ammonia;
 use anyhow::{Context, Result, bail};
 use maud::{DOCTYPE, Markup, html};
 use std::fs;
 use std::path::Path;
 
 pub fn write_html(html: &str, out_path: &dyn AsRef<Path>) -> Result<()> {
-    // TODO: sanitize HTML via ammonia?
+    let sanitized_html = ammonia::clean(html);
 
-    fs::write(out_path, html)
+    fs::write(out_path, sanitized_html)
         .with_context(|| format!("Failed to write HTML to {:#?}", out_path.as_ref()))?;
 
     Ok(())
