@@ -1,5 +1,7 @@
-use maud::{DOCTYPE, html};
+use maud::html;
 use serde::Deserialize;
+
+use crate::utils;
 
 pub const IN_PROJS_CFG_PATH: &str = "projects.toml";
 pub const OUT_PROJ_PATH: &str = "build/projects/index.html";
@@ -25,11 +27,7 @@ pub fn create_html_str(pp: &ProjectPage) -> String {
     // TODO: Assign CSS classes!
 
     let markup = html! {
-        (DOCTYPE)
-        html {
-            meta charset="utf-8";
-            title {(pp.page_title)}
-        }
+        (utils::page_header(&pp.page_title))
 
         h1 {(pp.title)}
         p {(pp.desc)}

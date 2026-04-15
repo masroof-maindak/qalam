@@ -71,7 +71,10 @@ pub fn parse_toml_file(tf: TomlFileType, path: &str) -> Result<TomlCfg> {
 pub fn page_header(page_title: &str) -> Markup {
     html! {
         (DOCTYPE)
-        meta charset="utf-8";
-        title { (page_title) }
+        html {
+            meta charset="utf-8";
+            title { (page_title) }
+        }
+        link rel="stylesheet" type="text/css" href="themes/style.css";
     }
 }

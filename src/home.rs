@@ -1,5 +1,7 @@
-use maud::{DOCTYPE, html};
+use maud::html;
 use serde::{Deserialize, Serialize};
+
+use crate::utils;
 
 pub const IN_HOME_CFG_PATH: &str = "index.toml";
 pub const OUT_HOME_CFG_PATH: &str = "build/index.html";
@@ -18,14 +20,8 @@ pub struct HomePage {
 }
 
 pub fn create_html_str(hp: &HomePage) -> String {
-    // TODO: Assign CSS classes!
-
     let markup = html! {
-        (DOCTYPE)
-        html {
-            meta charset="utf-8";
-            title {(hp.page_title)}
-        }
+        (utils::page_header(&hp.page_title))
 
         section #home-info {
             img {}
@@ -50,12 +46,6 @@ pub fn create_html_str(hp: &HomePage) -> String {
 
         section #home-brief {
             p {(hp.desc)}
-        }
-
-        section #home-post-list {
-            // TODO: loop over hp.num_recent_posts posts
-
-            a href="/posts/" {"more »"}
         }
     };
 
