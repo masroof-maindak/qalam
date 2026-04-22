@@ -12,8 +12,7 @@ Swampy static site generator.
 ├── posts/
 │   └── *.md
 ├── themes/
-│   ├── override.css
-│   └── style.css
+│   └── override.css
 ├── index.toml
 ├── posts.toml
 └── projects.toml
@@ -23,13 +22,14 @@ Swampy static site generator.
 
 ```
 build/
+├── img/
 ├── posts/
 │   ├── index.html
 │   └── *.html
 ├── projects/
 │   └── index.html
 ├── themes/
-│   └── style.css
+│   └── styles.css
 └── index.html
 ```
 
@@ -42,7 +42,7 @@ build/
 - [x] Parse index.toml for homepage
 - [x] Home page HTML
 - [x] CSS class assignment to homepage elements
-- [ ] CSS for home page
+- [x] CSS for home page
 - [ ] CSS class assignment to projects/post pages
 - [ ] CSS for posts/projects page
 - [x] Read MD frontmatter

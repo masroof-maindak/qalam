@@ -1,14 +1,21 @@
 use crate::{home, posts, projects};
-use ammonia;
+// use ammonia;
+
 use anyhow::{Context, Result, bail};
+use camino::Utf8Path;
 use maud::{DOCTYPE, Markup, html};
-use std::fs;
+use std::fs::{self, OpenOptions};
+use std::io::Write;
 use std::path::Path;
 
-pub fn write_html(html: &str, out_path: &dyn AsRef<Path>) -> Result<()> {
-    let sanitized_html = ammonia::clean(html);
+pub const OVERRIDE_CSS_PATH: &str = "themes/override.css";
+pub const CSS_PATH: &str = "themes/styles.css";
+pub const OUT_CSS_PATH: &str = "build/themes/styles.css";
 
-    fs::write(out_path, sanitized_html)
+pub fn write_html(html: &str, out_path: &dyn AsRef<Path>) -> Result<()> {
+    // let html = ammonia::clean(html);
+
+    fs::write(out_path, html)
         .with_context(|| format!("Failed to write HTML to {:#?}", out_path.as_ref()))?;
 
     Ok(())
@@ -76,6 +83,41 @@ pub fn page_header(page_title: &str) -> Markup {
             meta charset="utf-8";
             title { (page_title) }
         }
-        link rel="stylesheet" type="text/css" href="themes/style.css";
+        link rel="stylesheet" type="text/css" href=(CSS_PATH);
     }
+}
+
+pub fn copy_images(src_path: &str, dst_path: &str) -> Result<()> {
+    fs::create_dir_all(dst_path)?;
+
+    for entry in Utf8Path::new(src_path).read_dir_utf8()? {
+        let entry = entry?;
+        let entry = entry.path();
+
+        if let Some(ext) = entry.extension() {
+            if [".jpg", ".png", ".webp"].contains(&ext) {
+                fs::copy(entry, dst_path)?;
+            }
+        }
+    }
+
+    Ok(())
+}
+
+pub fn generate_css_with_override(base_path: &dyn AsRef<Path>) -> Result<()> {
+    fs::copy(base_path.as_ref().join(CSS_PATH), OUT_CSS_PATH)?;
+
+    let override_css_path = Path::new(OVERRIDE_CSS_PATH);
+    if override_css_path.exists() {
+        let override_css = fs::read_to_string(override_css_path)?;
+
+        let mut f = OpenOptions::new()
+            .write(true)
+            .append(true)
+            .open(OUT_CSS_PATH)?;
+
+        writeln!(f, "{override_css}")?;
+    }
+
+    Ok(())
 }

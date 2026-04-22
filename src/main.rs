@@ -1,21 +1,26 @@
-use anyhow::Result;
+use anyhow::{Context, Result};
 use std::env;
-// use std::path::Path;
 
 pub mod home;
 pub mod posts;
 pub mod projects;
 pub mod utils;
 
-use utils::{TomlFileType, parse_toml_file, write_html};
+use utils::{TomlFileType, copy_images, generate_css_with_override, parse_toml_file, write_html};
 
-const OUT_DIRS: [&str; 3] = [
+pub const IMAGES_DIR: &str = "img/";
+pub const OUT_IMAGES_DIR: &str = "build/img/";
+
+const OUT_DIRS: [&str; 4] = [
     posts::OUT_POSTS_DIR,
     projects::OUT_PROJ_DIR,
     "build/themes/",
+    OUT_IMAGES_DIR,
 ];
 
 fn main() -> Result<()> {
+    let start_path = env::current_dir()?;
+
     // Chdir if provided
     let args: Vec<String> = env::args().collect();
     if args.len() > 2 {
@@ -27,8 +32,12 @@ fn main() -> Result<()> {
 
     // Ensure output dirs
     for d in OUT_DIRS {
-        std::fs::create_dir_all(d)?;
+        std::fs::create_dir_all(d).with_context(|| format!("Failed to create_dir {}", d))?;
     }
+
+    copy_images(IMAGES_DIR, OUT_IMAGES_DIR)?;
+
+    generate_css_with_override(&start_path)?;
 
     // Homepage
     let home_cfg_file = parse_toml_file(TomlFileType::Home, home::IN_HOME_CFG_PATH)?;

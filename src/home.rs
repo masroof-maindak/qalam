@@ -5,6 +5,7 @@ use crate::utils;
 
 pub const IN_HOME_CFG_PATH: &str = "index.toml";
 pub const OUT_HOME_CFG_PATH: &str = "build/index.html";
+pub const AVATAR_PATH: &str = "img/avatar.webp";
 
 #[derive(Serialize, Deserialize, Debug)]
 pub struct HomePage {
@@ -15,8 +16,6 @@ pub struct HomePage {
     email: String,
     github: String,
     desc: String,
-    num_recent_posts: u8,
-    css_file_path: Option<String>,
 }
 
 pub fn create_html_str(hp: &HomePage) -> String {
@@ -24,7 +23,7 @@ pub fn create_html_str(hp: &HomePage) -> String {
         (utils::page_header(&hp.page_title))
 
         section #home-info {
-            img {}
+            img src=(AVATAR_PATH) alt={"Avatar"};
             div {
                 span #name {(hp.name)}
                 span #username {(hp.username)}
