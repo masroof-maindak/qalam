@@ -55,11 +55,20 @@ footer {
   text-decoration: none;
 }
 
-#projects-page, #posts-page h1 {
+#projects-page h1 {
   margin: 0 0 10px;
 }
 
-#projects-page, #posts-page > p {
+#projects-page > p {
+  margin: 0 0 40px;
+  color: var(--muted);
+}
+
+#posts-page h1 {
+  margin: 0 0 10px;
+}
+
+#posts-page > p {
   margin: 0 0 40px;
   color: var(--muted);
 }
