@@ -28,7 +28,7 @@ pub fn create_html_str(pp: &ProjectPage, footer_text: &Option<String>) -> String
         (utils::page_header(&pp.page_title, &".."))
 
         div #projects-page {
-            a #back href="/index.html" { "← Back" }
+            (utils::goto_home_link())
 
             h1 {(pp.title)}
             p {(pp.desc)}

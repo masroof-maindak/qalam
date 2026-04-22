@@ -181,8 +181,6 @@ pub fn create_index_html_str(
     post_fpaths: &[Utf8PathBuf],
     footer_text: &Option<String>,
 ) -> Result<String> {
-    // TODO: Assign CSS classes!
-
     let post_out_paths = generate_out_path_vec(post_fpaths)?;
     let post_out_fnames = post_out_paths
         .iter()
@@ -199,20 +197,26 @@ pub fn create_index_html_str(
         .map(|f| extract_metadata_and_content(f))
         .collect::<Result<Vec<(NoteMetadata, ParsedEntity<FrontMatter>)>>>()?;
 
-    let out_path_metadata_it =
-        zip(post_out_fnames, post_metadatas).sorted_by_key(|(_, md)| md.0.date);
+    let out_path_metadata_it = zip(post_out_fnames, post_metadatas)
+        .sorted_by_key(|(_, md)| md.0.date)
+        .rev();
 
     let markup = html! {
         (utils::page_header(&pp.page_title, &".."))
 
-        h1 {(pp.title)}
-        p {(pp.desc)}
+        div #posts-page {
+            (utils::goto_home_link())
 
-        div .post-list {
-            @for (rel_url, md) in out_path_metadata_it {
-                a .post-list-entry href={(rel_url)} {(md.0.title)}
-                span {(md.0.date)}
-                br;
+            h1 {(pp.title)}
+            p {(pp.desc)}
+
+            div .post-list {
+                @for (rel_url, md) in out_path_metadata_it {
+                    div .post-row {
+                        a .post-list-entry href={(rel_url)} {(md.0.title)}
+                        span .post-date {(md.0.date)}
+                    }
+                }
             }
         }
 

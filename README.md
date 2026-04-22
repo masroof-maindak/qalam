@@ -44,11 +44,12 @@ build/
 - [ ] CSS Class Assignment
   - [x] Home
   - [x] Projects
-  - [ ] Posts
+  - [x] Posts
+  - [ ] Post entry
 - [ ] CSS
   - [x] Home
   - [x] Projects
-  - [ ] Posts
+  - [x] Posts
   - [ ] Posts entry
 - [x] Read MD frontmatter
   - Maintain state? Or better yet -- just re-scan everything honestly (for now)

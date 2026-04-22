@@ -90,6 +90,12 @@ pub fn page_header(page_title: &str, css_path_base_dir: &dyn AsRef<Path>) -> Mar
     }
 }
 
+pub fn goto_home_link() -> Markup {
+    html! {
+        a #back-text href="/index.html" { "← Back" }
+    }
+}
+
 pub fn page_footer(copyright_str: &Option<String>) -> Markup {
     html! {
         footer {

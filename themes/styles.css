@@ -40,7 +40,7 @@ footer {
   text-align: left;
 }
 
-#projects-page {
+#projects-page, #posts-page {
   display: flex;
   flex-direction: column;
   width: min(100%, 720px);
@@ -48,19 +48,43 @@ footer {
   background: var(--bg);
 }
 
-#projects-page #back {
+#back-text {
   display: inline-block;
   margin-bottom: 28px;
   color: var(--muted);
   text-decoration: none;
 }
 
-#projects-page h1 {
+#projects-page, #posts-page h1 {
   margin: 0 0 10px;
 }
 
-#projects-page > p {
+#projects-page, #posts-page > p {
   margin: 0 0 40px;
+  color: var(--muted);
+}
+
+.post-row {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: baseline;
+  gap: 12px;
+  margin: 0 0 16px;
+}
+
+.post-list-entry {
+  color: var(--accent);
+  text-decoration: none;
+}
+
+.post-list-entry:hover,
+.post-list-entry:focus-visible {
+  text-decoration: underline;
+  text-decoration-color: var(--accent);
+  text-underline-offset: 8px;
+}
+
+.post-date {
   color: var(--muted);
 }
 
