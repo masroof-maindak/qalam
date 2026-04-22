@@ -1,3 +1,11 @@
+:root {
+  --bg: #f1e3d1;
+  --text: #64513e;
+  --muted: #a0907d;
+  --accent: #bf7979;
+  --surface: #ddcebc;
+}
+
 body {
   margin: 0;
   min-height: 100vh;
@@ -7,8 +15,8 @@ body {
   align-items: center;
   padding: 24px;
   box-sizing: border-box;
-  background: #1a1a1a;
-  color: #d7d0c8;
+  background: var(--bg);
+  color: var(--text);
   font: 16px/1.6 system-ui, sans-serif;
 }
 
@@ -29,7 +37,7 @@ body {
   height: 56px;
   border-radius: 50%;
   object-fit: cover;
-  background: #98a34f;
+  background: var(--accent);
 }
 
 #home-copy {
@@ -44,11 +52,11 @@ body {
 }
 
 #username {
-  color: #8c9ab1;
+  color: var(--accent);
 }
 
 #bio {
-  color: #9a9288;
+  color: var(--muted);
 }
 
 #home-links {
@@ -58,11 +66,32 @@ body {
   margin: 24px 0 32px;
 }
 
+#home-links #right {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+#home-links #right a {
+  color: inherit;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 0;
+}
+
+#home-links svg {
+  display: block;
+  width: 22px;
+  height: 22px;
+}
+
 .home-link {
   color: inherit;
   text-decoration: underline;
-  text-decoration-color: #8c9ab1;
-  text-underline-offset: 4px;
+  text-decoration-color: var(--accent);
+  text-underline-offset: 8px;
   margin-right: 16px;
 }
 
