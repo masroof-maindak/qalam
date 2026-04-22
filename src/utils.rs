@@ -103,7 +103,9 @@ pub fn page_footer(copyright_str: &Option<String>) -> Markup {
                 span {(s) "  |  "}
             }
 
-            span {"Built with " a .footer-link href=(PROJECT_URL) {"Qalam."}};
+            span {"Built w/ " a .footer-link href=(PROJECT_URL) {"Qalam."}};
+
+            // TODO: right-aligned theme colour switcher
         }
     }
 }
