@@ -134,10 +134,11 @@ build/
   - [x] Use to present posts, \*, on posts/index.html
     - [x] sorted by date
 - [x] Copyright notice in footer
+- [x] `<dir>` flag -- chdir to given path and build there
 - [ ] Syntax highlighting via `syntect`
   - [ ] Swamp light/dark themes OOTB
   - [ ] Configurable themes as part of index.toml
-- [x] `<dir>` flag -- chdir to given path and build there
+- [ ] Light/dark-mode toggle
 - [ ] TOC for blog posts
 - [ ] Post tagging via MD frontmatter & output HTML tag pages
 
