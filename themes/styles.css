@@ -17,7 +17,9 @@ body {
   box-sizing: border-box;
   background: var(--bg);
   color: var(--text);
-  font: 16px/1.6 system-ui, sans-serif;
+  font:
+    16px/1.6 system-ui,
+    sans-serif;
 }
 
 body:has(footer) {
@@ -40,7 +42,8 @@ footer {
   text-align: left;
 }
 
-#projects-page, #posts-page {
+#projects-page,
+#posts-page {
   display: flex;
   flex-direction: column;
   width: min(100%, 720px);
@@ -137,8 +140,8 @@ footer {
 }
 
 #home-info img {
-  width: 56px;
-  height: 56px;
+  width: 60px;
+  height: 60px;
   border-radius: 50%;
   object-fit: cover;
   background: var(--accent);
@@ -197,6 +200,11 @@ footer {
   text-decoration-color: var(--accent);
   text-underline-offset: 8px;
   margin-right: 16px;
+}
+
+.home-link:hover,
+.home-link:focus-visible {
+  color: var(--accent);
 }
 
 .footer-link {
