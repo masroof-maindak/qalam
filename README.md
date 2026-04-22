@@ -2,6 +2,78 @@
 
 Swampy static site generator.
 
+## Setup
+
+```bash
+git clone https://github.com/masroof-maindak/qalam.git
+cd qalam
+cargo install --path .
+```
+
+## Usage
+
+```bash
+# After completing the configuration, and ensuring you have the expected
+# directory structure...
+
+qalam <dir> # '.' by default
+```
+
+## Configuration
+
+### `./index.toml`
+
+```toml
+page_title = "My Site"
+name = "John Doe"
+username = "@john-doe"
+bio = "Phrase describing you."
+email = "john.doe@gmail.com"
+github = "https://github.com/your-profile"
+desc = "Brief paragraph about you."
+footer = "© 2025 John Doe"
+```
+
+### `./posts.toml`
+
+```toml
+page_title = "My Site/Posts"
+title = "Posts"
+desc = "Articles & blog entries"
+```
+
+### `./projects.toml`
+
+```toml
+page_title = "My Site/Projects"
+title = "Projects"
+desc = "Stuff I've built"
+
+[[projects]]
+name = "qalam"
+desc = "Swampy static site generator."
+tags = ["Rust", "Web"]
+url = "https://github.com/masroof-maindak/qalam"
+
+# As many [[projects]] as you want
+```
+
+## Theming
+
+You can change the website's colour theme by setting the following variables
+within `./themes/override.css`, in the root of your website's directory.
+
+```css
+:root {
+  /* Swamp Light */
+  --bg: #f1e3d1;
+  --text: #64513e;
+  --muted: #a0907d;
+  --accent: #bf7979;
+  --surface: #ddcebc;
+}
+```
+
 ## Expected Directory Structure
 
 ### Input
@@ -50,7 +122,7 @@ build/
   - [x] Home
   - [x] Projects
   - [x] Posts
-  - [ ] Posts entry
+  - [ ] Post entry
 - [x] Read MD frontmatter
   - Maintain state? Or better yet -- just re-scan everything honestly (for now)
     - No, let's keep all note-relevant state inside a dedicated struct
@@ -68,3 +140,9 @@ build/
 - [x] `<dir>` flag -- chdir to given path and build there
 - [ ] TOC for blog posts
 - [ ] Post tagging via MD frontmatter & output HTML tag pages
+
+## Acknowledgements
+
+- [Isunjn's](https://github.com/isunjn) excellent theme for Zola,
+  [serene](https://github.com/isunjn/serene), that I adored, but left solely by
+  virtue of the frequency with which it introduced breaking changes.
