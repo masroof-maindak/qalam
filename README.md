@@ -138,6 +138,7 @@ build/
 - [ ] Syntax highlighting via `syntect`
   - [ ] Swamp light/dark themes OOTB
   - [ ] Configurable themes as part of index.toml
+- [ ] GH Pages deploy action
 - [ ] Light/dark-mode toggle
 - [ ] TOC for blog posts
 - [ ] Post tagging via MD frontmatter & output HTML tag pages
