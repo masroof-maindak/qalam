@@ -37,18 +37,22 @@ fn main() -> Result<()> {
         std::fs::create_dir_all(d).with_context(|| format!("Failed to create_dir {}", d))?;
     }
 
-    copy_images_to_build(IMAGES_DIR, &OUT_IMAGES_DIR)?;
+    copy_images_to_build(IMAGES_DIR, &OUT_IMAGES_DIR)
+        .with_context(|| format!("Failed to copy {IMAGES_DIR} to {OUT_IMAGES_DIR}"))?;
 
-    generate_css_with_override(&start_path.join(utils::CSS_PATH))?;
+    generate_css_with_override(&start_path.join(utils::CSS_PATH))
+        .with_context(|| "Failed to generate output CSS.")?;
 
     // Homepage
-    let idx_cfg_file = parse_toml_file(TomlFileType::Home, home::IN_HOME_CFG_PATH)?;
+    let idx_cfg_file = parse_toml_file(TomlFileType::Home, home::IN_HOME_CFG_PATH)
+        .with_context(|| "Failed to parse index toml file")?;
     let idx_cfg = idx_cfg_file.into_home()?;
     let home_page_html = home::create_html_str(&idx_cfg);
     write_html(&home_page_html, &home::OUT_HOME_CFG_PATH)?;
 
     // Projects
-    let proj_cfg_file = parse_toml_file(TomlFileType::Proj, projects::IN_PROJS_CFG_PATH)?;
+    let proj_cfg_file = parse_toml_file(TomlFileType::Proj, projects::IN_PROJS_CFG_PATH)
+        .with_context(|| "Failed to parse projects toml file")?;
     let projs_page_html = projects::create_html_str(&proj_cfg_file.into_proj()?, &idx_cfg.footer);
     write_html(&projs_page_html, &projects::OUT_PROJ_PATH)?;
 
@@ -57,7 +61,8 @@ fn main() -> Result<()> {
     posts::generate_html_files_all_posts(&post_fpaths, &idx_cfg.footer)?;
 
     // Posts - Index
-    let posts_cfg_file = parse_toml_file(TomlFileType::Posts, posts::IN_POSTS_CFG_PATH)?;
+    let posts_cfg_file = parse_toml_file(TomlFileType::Posts, posts::IN_POSTS_CFG_PATH)
+        .with_context(|| "Failed to parse posts toml file")?;
     let posts_page_html =
         posts::create_index_html_str(&posts_cfg_file.into_post()?, &post_fpaths, &idx_cfg.footer)?;
     write_html(&posts_page_html, &posts::OUT_POSTS_PATH)?;

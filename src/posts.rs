@@ -24,13 +24,12 @@ pub struct PostsPage {
     desc: String,
 }
 
-#[derive(Deserialize, Debug)]
+#[derive(Deserialize)]
 struct FrontMatter {
     title: String,
     date: String, // toml::value::Date doesn't work for some reason. At least not for my desired format (YYYY-MM-DD), which is all I tested.
 }
 
-#[derive(Debug, Ord, Eq, PartialOrd, PartialEq)]
 struct NoteMetadata {
     // Generated from FrontMatter
     title: String,
