@@ -8,9 +8,10 @@ use std::fs::{self, OpenOptions};
 use std::io::Write;
 use std::path::Path;
 
-pub const OVERRIDE_CSS_PATH: &str = "themes/override.css";
+const OVERRIDE_CSS_PATH: &str = "themes/override.css";
 pub const CSS_PATH: &str = "themes/styles.css";
-pub const OUT_CSS_PATH: &str = "build/themes/styles.css";
+const OUT_CSS_PATH: &str = "build/themes/styles.css";
+const PROJECT_URL: &str = "https://github.com/masroof-maindak/qalam";
 
 pub fn write_html(html: &str, out_path: &dyn AsRef<Path>) -> Result<()> {
     // let html = ammonia::clean(html);
@@ -76,14 +77,28 @@ pub fn parse_toml_file(tf: TomlFileType, path: &str) -> Result<TomlCfg> {
     }
 }
 
-pub fn page_header(page_title: &str) -> Markup {
+pub fn page_header(page_title: &str, css_path_base_dir: &dyn AsRef<Path>) -> Markup {
+    let css_path = css_path_base_dir.as_ref().join(CSS_PATH);
+
     html! {
         (DOCTYPE)
         html {
             meta charset="utf-8";
             title { (page_title) }
         }
-        link rel="stylesheet" type="text/css" href=(CSS_PATH);
+        link rel="stylesheet" type="text/css" href=(css_path.display());
+    }
+}
+
+pub fn page_footer(copyright_str: &Option<String>) -> Markup {
+    html! {
+        footer {
+            @if let Some(s) = copyright_str {
+                span {(s) "  |  "}
+            }
+
+            span {"Built with " a .footer-link href=(PROJECT_URL) {"Qalam."}};
+        }
     }
 }
 

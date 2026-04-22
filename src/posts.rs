@@ -101,12 +101,17 @@ fn extract_metadata_and_content(
     Ok((note_md, fm))
 }
 
-pub fn generate_html_str(fpath: &Utf8Path) -> Result<String> {
+pub fn generate_html_str(fpath: &Utf8Path, footer_text: &Option<String>) -> Result<String> {
     let (note_md, fm) = extract_metadata_and_content(fpath)?;
 
     let parser = Parser::new_ext(&fm.content, Options::all());
-    let mut note_content: String = generate_header(note_md);
+
+    let mut note_content: String = generate_post_header(note_md);
+
     html::write_html_fmt(&mut note_content, parser)?;
+
+    let footer_html_str = utils::page_footer(&footer_text).into_string();
+    note_content += &footer_html_str;
 
     Ok(note_content)
 }
@@ -136,7 +141,10 @@ pub fn generate_out_path_vec(post_fpaths: &[Utf8PathBuf]) -> Result<Vec<Utf8Path
         .collect()
 }
 
-pub fn generate_html_files_all_posts(post_fpaths: &Vec<Utf8PathBuf>) -> Result<()> {
+pub fn generate_html_files_all_posts(
+    post_fpaths: &Vec<Utf8PathBuf>,
+    footer_text: &Option<String>,
+) -> Result<()> {
     let post_out_fpaths = generate_out_path_vec(post_fpaths)?;
 
     for (fpath, out_fpath) in zip(post_fpaths, post_out_fpaths) {
@@ -144,7 +152,7 @@ pub fn generate_html_files_all_posts(post_fpaths: &Vec<Utf8PathBuf>) -> Result<(
             continue;
         }
 
-        let note_content = match generate_html_str(fpath) {
+        let note_content = match generate_html_str(fpath, &footer_text) {
             Ok(s) => s,
             Err(e) => {
                 eprintln!("Failed to convert {:#?} to HTML str {e}", &fpath);
@@ -158,9 +166,9 @@ pub fn generate_html_files_all_posts(post_fpaths: &Vec<Utf8PathBuf>) -> Result<(
     Ok(())
 }
 
-fn generate_header(note_md: NoteMetadata) -> String {
+fn generate_post_header(note_md: NoteMetadata) -> String {
     html!(
-        (utils::page_header(&note_md.title))
+        (utils::page_header(&note_md.title, &".."))
         h1 {(note_md.title)}
         span {(note_md.date)}
         // TODO: add tags here, eventually
@@ -168,7 +176,11 @@ fn generate_header(note_md: NoteMetadata) -> String {
     .into_string()
 }
 
-pub fn create_index_html_str(pp: &PostsPage, post_fpaths: &[Utf8PathBuf]) -> Result<String> {
+pub fn create_index_html_str(
+    pp: &PostsPage,
+    post_fpaths: &[Utf8PathBuf],
+    footer_text: &Option<String>,
+) -> Result<String> {
     // TODO: Assign CSS classes!
 
     let post_out_paths = generate_out_path_vec(post_fpaths)?;
@@ -191,7 +203,8 @@ pub fn create_index_html_str(pp: &PostsPage, post_fpaths: &[Utf8PathBuf]) -> Res
         zip(post_out_fnames, post_metadatas).sorted_by_key(|(_, md)| md.0.date);
 
     let markup = html! {
-        (utils::page_header(&pp.page_title))
+        (utils::page_header(&pp.page_title, &".."))
+
         h1 {(pp.title)}
         p {(pp.desc)}
 
@@ -202,6 +215,8 @@ pub fn create_index_html_str(pp: &PostsPage, post_fpaths: &[Utf8PathBuf]) -> Res
                 br;
             }
         }
+
+        (utils::page_footer(footer_text))
     };
 
     Ok(markup.into_string())

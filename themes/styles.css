@@ -20,10 +20,81 @@ body {
   font: 16px/1.6 system-ui, sans-serif;
 }
 
+body:has(footer) {
+  justify-content: flex-start;
+}
+
 #home-info,
 #home-links,
 #home-brief {
   width: min(100%, 720px);
+}
+
+footer {
+  width: min(100%, 720px);
+  margin-top: auto;
+  margin-bottom: 10px;
+  padding-top: 28px;
+  color: var(--muted);
+  font-size: 0.825rem;
+  text-align: left;
+}
+
+#projects-page {
+  display: flex;
+  flex-direction: column;
+  width: min(100%, 720px);
+  color: var(--text);
+  background: var(--bg);
+}
+
+#projects-page #back {
+  display: inline-block;
+  margin-bottom: 28px;
+  color: var(--muted);
+  text-decoration: none;
+}
+
+#projects-page h1 {
+  margin: 0 0 10px;
+}
+
+#projects-page > p {
+  margin: 0 0 40px;
+  color: var(--muted);
+}
+
+.project-item {
+  margin: 0 0 42px;
+}
+
+.project-line {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: baseline;
+}
+
+.project-name {
+  color: var(--accent);
+  font-size: 1.05em;
+  font-weight: 700;
+  text-decoration: underline;
+  text-decoration-color: var(--accent);
+  text-underline-offset: 6px;
+}
+
+.project-desc {
+  color: var(--text);
+}
+
+.project-tags {
+  margin: 8px 0 0;
+  color: var(--muted);
+}
+
+.project-tags span {
+  margin-right: 8px;
 }
 
 #home-info {
@@ -93,6 +164,19 @@ body {
   text-decoration-color: var(--accent);
   text-underline-offset: 8px;
   margin-right: 16px;
+}
+
+.footer-link {
+  color: inherit;
+  text-decoration: underline;
+  text-decoration-color: var(--muted);
+  text-underline-offset: 4px;
+}
+
+.footer-link:hover,
+.footer-link:focus-visible {
+  color: var(--accent);
+  text-decoration-color: var(--accent);
 }
 
 .home-link:last-child {

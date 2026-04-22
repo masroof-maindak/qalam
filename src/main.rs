@@ -42,22 +42,24 @@ fn main() -> Result<()> {
     generate_css_with_override(&start_path.join(utils::CSS_PATH))?;
 
     // Homepage
-    let home_cfg_file = parse_toml_file(TomlFileType::Home, home::IN_HOME_CFG_PATH)?;
-    let home_page_html = home::create_html_str(&home_cfg_file.into_home()?);
+    let idx_cfg_file = parse_toml_file(TomlFileType::Home, home::IN_HOME_CFG_PATH)?;
+    let idx_cfg = idx_cfg_file.into_home()?;
+    let home_page_html = home::create_html_str(&idx_cfg);
     write_html(&home_page_html, &home::OUT_HOME_CFG_PATH)?;
 
     // Projects
     let proj_cfg_file = parse_toml_file(TomlFileType::Proj, projects::IN_PROJS_CFG_PATH)?;
-    let projs_page_html = projects::create_html_str(&proj_cfg_file.into_proj()?);
+    let projs_page_html = projects::create_html_str(&proj_cfg_file.into_proj()?, &idx_cfg.footer);
     write_html(&projs_page_html, &projects::OUT_PROJ_PATH)?;
 
     // Posts
     let post_fpaths = posts::get_files_from_posts_dir()?;
-    posts::generate_html_files_all_posts(&post_fpaths)?;
+    posts::generate_html_files_all_posts(&post_fpaths, &idx_cfg.footer)?;
 
     // Posts - Index
     let posts_cfg_file = parse_toml_file(TomlFileType::Posts, posts::IN_POSTS_CFG_PATH)?;
-    let posts_page_html = posts::create_index_html_str(&posts_cfg_file.into_post()?, &post_fpaths)?;
+    let posts_page_html =
+        posts::create_index_html_str(&posts_cfg_file.into_post()?, &post_fpaths, &idx_cfg.footer)?;
     write_html(&posts_page_html, &posts::OUT_POSTS_PATH)?;
 
     Ok(())

@@ -41,10 +41,15 @@ build/
   - Would we need an HTML templater like `maud`? Yes, and it's glorious.
 - [x] Parse index.toml for homepage
 - [x] Home page HTML
-- [x] CSS class assignment to homepage elements
-- [x] CSS for home page
-- [ ] CSS class assignment to projects/post pages
-- [ ] CSS for posts/projects page
+- [ ] CSS Class Assignment
+  - [x] Home
+  - [x] Projects
+  - [ ] Posts
+- [ ] CSS
+  - [x] Home
+  - [x] Projects
+  - [ ] Posts
+  - [ ] Posts entry
 - [x] Read MD frontmatter
   - Maintain state? Or better yet -- just re-scan everything honestly (for now)
     - No, let's keep all note-relevant state inside a dedicated struct
@@ -55,7 +60,7 @@ build/
   - [x] Prepend to page's HTML
   - [x] Use to present posts, \*, on posts/index.html
     - [x] sorted by date
-- [ ] CSS for post entry
+- [x] Copyright notice in footer
 - [ ] Syntax highlighting via `syntect`
   - [ ] Swamp light/dark themes OOTB
   - [ ] Configurable themes as part of index.toml

@@ -23,24 +23,32 @@ pub struct ProjectPage {
     projects: Vec<Project>,
 }
 
-pub fn create_html_str(pp: &ProjectPage) -> String {
-    // TODO: Assign CSS classes!
-
+pub fn create_html_str(pp: &ProjectPage, footer_text: &Option<String>) -> String {
     let markup = html! {
-        (utils::page_header(&pp.page_title))
+        (utils::page_header(&pp.page_title, &".."))
 
-        h1 {(pp.title)}
-        p {(pp.desc)}
+        div #projects-page {
+            a #back href="/index.html" { "← Back" }
 
-        @for proj in &pp.projects {
-            h3 {(proj.name) ", -- " (proj.url)}
-            p {(proj.desc)}
-            p {
-                @for tag in &proj.tags {
-                    {"#" (tag) " "}
+            h1 {(pp.title)}
+            p {(pp.desc)}
+
+            @for proj in &pp.projects {
+                article .project-item {
+                    div .project-line {
+                        a .project-name href=(proj.url) target="_blank" rel="noreferrer noopener" {(proj.name)}
+                        span .project-desc {(proj.desc)}
+                    }
+                    p .project-tags {
+                        @for tag in &proj.tags {
+                            span { "#" (tag) }
+                        }
+                    }
                 }
             }
         }
+
+        (utils::page_footer(&footer_text))
     };
 
     markup.into_string()
