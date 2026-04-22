@@ -87,27 +87,27 @@ pub fn page_header(page_title: &str) -> Markup {
     }
 }
 
-pub fn copy_images(src_path: &str, dst_path: &str) -> Result<()> {
+pub fn copy_images_to_build(src_path: &str, dst_path: &dyn AsRef<Path>) -> Result<()> {
     fs::create_dir_all(dst_path)?;
 
     for entry in Utf8Path::new(src_path).read_dir_utf8()? {
         let entry = entry?;
         let entry = entry.path();
 
-        if let Some(ext) = entry.extension() {
-            // FIXME:
-            // if ["jpg", "png", "webp"].contains(&ext) {
-            //     fs::copy(entry, dst_path)?;
-            // }
+        if let Some(fname) = entry.file_name()
+            && let Some(ext) = entry.extension()
+            && ["jpg", "png", "webp"].contains(&ext)
+        {
+            let dst = dst_path.as_ref().join(fname);
+            fs::copy(entry, &dst).with_context(|| format!("Moving {entry} to {:#?}", dst))?;
         }
     }
 
     Ok(())
 }
 
-pub fn generate_css_with_override(base_path: &str) -> Result<()> {
+pub fn generate_css_with_override(base_path: &dyn AsRef<Path>) -> Result<()> {
     fs::copy(base_path, OUT_CSS_PATH)?;
-
     let override_css_path = Path::new(OVERRIDE_CSS_PATH);
     if override_css_path.exists() {
         let override_css = fs::read_to_string(override_css_path)?;

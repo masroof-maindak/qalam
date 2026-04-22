@@ -37,7 +37,7 @@ fn main() -> Result<()> {
         std::fs::create_dir_all(d).with_context(|| format!("Failed to create_dir {}", d))?;
     }
 
-    copy_images_to_build(IMAGES_DIR, OUT_IMAGES_DIR)?;
+    copy_images_to_build(IMAGES_DIR, &OUT_IMAGES_DIR)?;
 
     generate_css_with_override(&start_path.join(utils::CSS_PATH))?;
 
