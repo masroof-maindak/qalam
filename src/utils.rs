@@ -95,9 +95,10 @@ pub fn copy_images(src_path: &str, dst_path: &str) -> Result<()> {
         let entry = entry.path();
 
         if let Some(ext) = entry.extension() {
-            if [".jpg", ".png", ".webp"].contains(&ext) {
-                fs::copy(entry, dst_path)?;
-            }
+            // FIXME:
+            // if ["jpg", "png", "webp"].contains(&ext) {
+            //     fs::copy(entry, dst_path)?;
+            // }
         }
     }
 

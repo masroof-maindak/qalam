@@ -24,11 +24,13 @@ pub fn create_html_str(hp: &HomePage) -> String {
 
         section #home-info {
             img src=(AVATAR_PATH) alt={"Avatar"};
-            div {
-                span #name {(hp.name)}
-                span #username {(hp.username)}
+            div #home-copy {
+                div #home-title {
+                    span #name {(hp.name)}
+                    span #username {(hp.username)}
+                }
+                div #bio {(hp.bio)}
             }
-            div #bio {(hp.bio)}
         }
 
         section #home-links {
