@@ -111,12 +111,7 @@ pub fn generate_css_with_override(base_path: &dyn AsRef<Path>) -> Result<()> {
     let override_css_path = Path::new(OVERRIDE_CSS_PATH);
     if override_css_path.exists() {
         let override_css = fs::read_to_string(override_css_path)?;
-
-        let mut f = OpenOptions::new()
-            .write(true)
-            .append(true)
-            .open(OUT_CSS_PATH)?;
-
+        let mut f = OpenOptions::new().append(true).open(OUT_CSS_PATH)?;
         writeln!(f, "{override_css}")?;
     }
 
