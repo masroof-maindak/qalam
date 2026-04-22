@@ -105,8 +105,8 @@ pub fn copy_images(src_path: &str, dst_path: &str) -> Result<()> {
     Ok(())
 }
 
-pub fn generate_css_with_override(base_path: &dyn AsRef<Path>) -> Result<()> {
-    fs::copy(base_path.as_ref().join(CSS_PATH), OUT_CSS_PATH)?;
+pub fn generate_css_with_override(base_path: &str) -> Result<()> {
+    fs::copy(base_path, OUT_CSS_PATH)?;
 
     let override_css_path = Path::new(OVERRIDE_CSS_PATH);
     if override_css_path.exists() {

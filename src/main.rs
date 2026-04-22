@@ -6,7 +6,9 @@ pub mod posts;
 pub mod projects;
 pub mod utils;
 
-use utils::{TomlFileType, copy_images, generate_css_with_override, parse_toml_file, write_html};
+use utils::{
+    TomlFileType, copy_images_to_build, generate_css_with_override, parse_toml_file, write_html,
+};
 
 pub const IMAGES_DIR: &str = "img/";
 pub const OUT_IMAGES_DIR: &str = "build/img/";
@@ -35,9 +37,9 @@ fn main() -> Result<()> {
         std::fs::create_dir_all(d).with_context(|| format!("Failed to create_dir {}", d))?;
     }
 
-    copy_images(IMAGES_DIR, OUT_IMAGES_DIR)?;
+    copy_images_to_build(IMAGES_DIR, OUT_IMAGES_DIR)?;
 
-    generate_css_with_override(&start_path)?;
+    generate_css_with_override(&start_path.join(utils::CSS_PATH))?;
 
     // Homepage
     let home_cfg_file = parse_toml_file(TomlFileType::Home, home::IN_HOME_CFG_PATH)?;
