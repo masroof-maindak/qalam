@@ -38,8 +38,8 @@ pub fn create_html_str(hp: &HomePage) -> String {
 
         section #home-links {
             div #left {
-                a .home-link href="/posts/index.html" {"posts"};
-                a .home-link href="/projects/index.html" {"projects"};
+                a .home-link href="/posts" {"posts"};
+                a .home-link href="/projects" {"projects"};
             }
             div #right {
                 a href=(hp.github) aria-label="GitHub" target="_blank" rel="noreferrer noopener" {
