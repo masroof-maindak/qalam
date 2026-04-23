@@ -122,6 +122,11 @@ footer {
   height: auto;
 }
 
+#post-page pre {
+  padding: 12px;
+  overflow-x: auto;
+}
+
 #back-text {
   display: inline-block;
   font-size: 0.9rem;
