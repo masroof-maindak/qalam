@@ -121,7 +121,7 @@ pub fn generate_html_str(fpath: &Utf8Path, footer_text: &Option<String>) -> Resu
         }
         .into_string()
     );
-    let footer_html_str = format!("</div>{}", utils::page_footer(&footer_text).into_string());
+    let footer_html_str = format!("</div>{}", utils::page_footer(footer_text).into_string());
 
     let mut note_content: String = header_html_str;
     let mut to_highlight = String::new();
@@ -154,9 +154,9 @@ pub fn generate_html_str(fpath: &Utf8Path, footer_text: &Option<String>) -> Resu
         Event::Text(t) => {
             if in_code_block {
                 to_highlight.push_str(&t);
-                return None;
+                None
             } else {
-                return Some(Event::Text(t));
+                Some(Event::Text(t))
             }
         }
         _ => Some(event),
@@ -202,7 +202,7 @@ pub fn generate_html_files_all_posts(
             continue;
         }
 
-        let note_content = match generate_html_str(fpath, &footer_text) {
+        let note_content = match generate_html_str(fpath, footer_text) {
             Ok(s) => s,
             Err(e) => {
                 eprintln!("Failed to convert {:#?} to HTML str {e}", &fpath);

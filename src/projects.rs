@@ -48,7 +48,7 @@ pub fn create_html_str(pp: &ProjectPage, footer_text: &Option<String>) -> String
             }
         }
 
-        (utils::page_footer(&footer_text))
+        (utils::page_footer(footer_text))
     };
 
     markup.into_string()
