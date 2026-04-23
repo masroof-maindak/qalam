@@ -69,7 +69,10 @@ within `./themes/override.css`, in the root of your website's directory.
   --bg: #f1e3d1;
   --text: #64513e;
   --muted: #a0907d;
+  --less-muted: #8c7b68;
+  --blockquote-fg: #786653;
   --accent: #bf7979;
+  --accent2: #9e5581;
   --surface: #ddcebc;
 }
 ```
@@ -108,6 +111,8 @@ build/
 ## TODO
 
 - [x] MD -> HTML
+  - Using `pulldown_cmark`, but `comrak` (that I discovered much later) seems to
+    be much easier...
 - [x] Read posts/ dir.
 - [x] Projects page; TOML page config & project array -> HTML
   - Would we need an HTML templater like `maud`? Yes, and it's glorious.
@@ -136,7 +141,7 @@ build/
 - [x] Copyright notice in footer
 - [x] `<dir>` flag -- chdir to given path and build there
 - [x] Syntax highlighting via `syntect`
-  - [ ] CSS - margins
+  - [x] CSS - padding
   - [ ] Line numbers
   - [ ] Swamp light/dark themes OOTB
   - [ ] Configurable themes as part of index.toml
