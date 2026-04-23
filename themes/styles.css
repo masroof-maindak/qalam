@@ -78,6 +78,14 @@ footer {
   text-decoration-color: var(--accent);
 }
 
+#post-page #back-text,
+#post-page #back-text:hover,
+#post-page #back-text:focus-visible,
+#post-page #back-text:visited {
+  color: var(--muted);
+  text-decoration: none;
+}
+
 .post-page-title {
   margin: 0 0 6px;
 }
@@ -119,6 +127,8 @@ footer {
   align-items: baseline;
   gap: 12px;
   margin: 0 0 16px;
+  position: relative;
+  padding-bottom: 6px;
 }
 
 .post-list-entry {
@@ -126,11 +136,15 @@ footer {
   text-decoration: none;
 }
 
-.post-list-entry:hover,
-.post-list-entry:focus-visible {
-  text-decoration: underline;
-  text-decoration-color: var(--accent);
-  text-underline-offset: 8px;
+.post-row:hover::after,
+.post-row:focus-within::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  border-bottom: 1px solid var(--accent);
+  pointer-events: none;
 }
 
 .post-date {
