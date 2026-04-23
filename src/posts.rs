@@ -4,10 +4,11 @@ use chrono::NaiveDate;
 use gray_matter::{Matter, ParsedEntity, engine::TOML};
 use itertools::Itertools;
 use maud::html;
-use pulldown_cmark::{Options, Parser, html};
+use pulldown_cmark::{CodeBlockKind, Event, Options, Parser, Tag, TagEnd, html};
 use serde::Deserialize;
 use std::fs::read_to_string;
 use std::iter::zip;
+use syntect::{highlighting::ThemeSet, html::highlighted_html_for_string, parsing::SyntaxSet};
 
 use crate::utils;
 
@@ -103,16 +104,58 @@ fn extract_metadata_and_content(
 pub fn generate_html_str(fpath: &Utf8Path, footer_text: &Option<String>) -> Result<String> {
     let (note_md, fm) = extract_metadata_and_content(fpath)?;
 
-    let parser = Parser::new_ext(&fm.content, Options::all());
+    let syntax_set = SyntaxSet::load_defaults_newlines();
+    let mut syntax_ref = syntax_set.find_syntax_plain_text();
+    // TODO: load from folder
+    let theme_set = ThemeSet::load_defaults();
+    let theme = theme_set.themes["base16-ocean.dark"].clone();
 
-    let mut note_content: String = generate_post_header(note_md);
-
-    html::write_html_fmt(&mut note_content, parser)?;
-
+    let header_html_str = generate_post_header(note_md);
     let footer_html_str = utils::page_footer(&footer_text).into_string();
-    note_content += &footer_html_str;
 
-    Ok(note_content)
+    let mut note_content: String = header_html_str;
+
+    let mut to_highlight = String::new();
+
+    let mut in_code_block = false;
+
+    let parser = Parser::new_ext(&fm.content, Options::all()).filter_map(|event| match event {
+        Event::Start(Tag::CodeBlock(kind)) => {
+            in_code_block = true;
+            match kind {
+                CodeBlockKind::Indented => {
+                    syntax_ref = syntax_set.find_syntax_plain_text();
+                }
+                CodeBlockKind::Fenced(lang) => {
+                    let lang = lang.trim();
+                    syntax_ref = syntax_set
+                        .find_syntax_by_token(lang)
+                        .unwrap_or_else(|| syntax_set.find_syntax_plain_text());
+                }
+            }
+            None
+        }
+        Event::End(TagEnd::CodeBlock) => {
+            in_code_block = false;
+
+            let html = highlighted_html_for_string(&to_highlight, &syntax_set, syntax_ref, &theme)
+                .unwrap_or(to_highlight.clone());
+
+            Some(Event::Html(html.into()))
+        }
+        Event::Text(t) => {
+            if in_code_block {
+                to_highlight.push_str(&t);
+                return None;
+            } else {
+                return Some(Event::Text(t));
+            }
+        }
+        _ => Some(event),
+    });
+
+    html::push_html(&mut note_content, parser);
+    Ok(note_content + &footer_html_str)
 }
 
 fn extract_stem_from_fpath(fpath: &Utf8PathBuf) -> Result<&str> {

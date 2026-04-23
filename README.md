@@ -78,7 +78,7 @@ within `./themes/override.css`, in the root of your website's directory.
 
 ### Input
 
-```
+```txt
 .
 ├── img/
 ├── posts/
@@ -92,7 +92,7 @@ within `./themes/override.css`, in the root of your website's directory.
 
 ### Output
 
-```
+```txt
 build/
 ├── img/
 ├── posts/
@@ -135,7 +135,7 @@ build/
     - [x] sorted by date
 - [x] Copyright notice in footer
 - [x] `<dir>` flag -- chdir to given path and build there
-- [ ] Syntax highlighting via `syntect`
+- [x] Syntax highlighting via `syntect`
   - [ ] Swamp light/dark themes OOTB
   - [ ] Configurable themes as part of index.toml
 - [ ] GH Pages deploy action
