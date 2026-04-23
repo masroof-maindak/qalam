@@ -113,16 +113,16 @@ build/
   - Would we need an HTML templater like `maud`? Yes, and it's glorious.
 - [x] Parse index.toml for homepage
 - [x] Home page HTML
-- [ ] CSS Class Assignment
+- [x] CSS Class Assignment
   - [x] Home
   - [x] Projects
   - [x] Posts
-  - [ ] Post entry
-- [ ] CSS
+  - [x] Post entry
+- [x] CSS
   - [x] Home
   - [x] Projects
   - [x] Posts
-  - [ ] Post entry
+  - [x] Post entry
 - [x] Read MD frontmatter
   - Maintain state? Or better yet -- just re-scan everything honestly (for now)
     - No, let's keep all note-relevant state inside a dedicated struct
@@ -136,6 +136,8 @@ build/
 - [x] Copyright notice in footer
 - [x] `<dir>` flag -- chdir to given path and build there
 - [x] Syntax highlighting via `syntect`
+  - [ ] CSS - margins
+  - [ ] Line numbers
   - [ ] Swamp light/dark themes OOTB
   - [ ] Configurable themes as part of index.toml
 - [ ] GH Pages deploy action

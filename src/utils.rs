@@ -96,6 +96,12 @@ pub fn goto_home_link() -> Markup {
     }
 }
 
+pub fn goto_posts_link() -> Markup {
+    html! {
+        a #back-text href="/posts" { "← Back" }
+    }
+}
+
 pub fn page_footer(copyright_str: &Option<String>) -> Markup {
     html! {
         footer {

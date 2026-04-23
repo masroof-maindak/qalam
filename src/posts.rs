@@ -110,13 +110,21 @@ pub fn generate_html_str(fpath: &Utf8Path, footer_text: &Option<String>) -> Resu
     let theme_set = ThemeSet::load_defaults();
     let theme = theme_set.themes["base16-ocean.dark"].clone();
 
-    let header_html_str = generate_post_header(note_md);
-    let footer_html_str = utils::page_footer(&footer_text).into_string();
+    let header_html_str = format!(
+        "{}<div id=\"post-page\">{}{}",
+        utils::page_header(&note_md.title, &"..").into_string(),
+        utils::goto_posts_link().into_string(),
+        html! {
+            h1 .post-page-title {(note_md.title)}
+            span .post-page-date {(note_md.date)}
+            // TODO: print tags
+        }
+        .into_string()
+    );
+    let footer_html_str = format!("</div>{}", utils::page_footer(&footer_text).into_string());
 
     let mut note_content: String = header_html_str;
-
     let mut to_highlight = String::new();
-
     let mut in_code_block = false;
 
     let parser = Parser::new_ext(&fm.content, Options::all()).filter_map(|event| match event {
@@ -206,16 +214,6 @@ pub fn generate_html_files_all_posts(
     }
 
     Ok(())
-}
-
-fn generate_post_header(note_md: NoteMetadata) -> String {
-    html!(
-        (utils::page_header(&note_md.title, &".."))
-        h1 {(note_md.title)}
-        span {(note_md.date)}
-        // TODO: add tags here, eventually
-    )
-    .into_string()
 }
 
 pub fn create_index_html_str(
