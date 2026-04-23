@@ -17,6 +17,7 @@ pub struct HomePage {
     github: String,
     desc: String,
     pub footer: Option<String>,
+    pub theme_name: String,
 }
 
 pub fn create_html_str(hp: &HomePage) -> String {

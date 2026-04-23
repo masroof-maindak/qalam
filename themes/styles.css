@@ -7,6 +7,7 @@
   --accent: #bf7979;
   --accent2: #9e5581;
   --surface: #ddcebc;
+  --center-box-width: 736px;
 }
 
 body {
@@ -32,11 +33,11 @@ body:has(footer) {
 #home-info,
 #home-links,
 #home-brief {
-  width: min(100%, 720px);
+  width: min(100%, var(--center-box-width));
 }
 
 footer {
-  width: min(100%, 720px);
+  width: min(100%, var(--center-box-width));
   margin-top: auto;
   margin-bottom: 10px;
   padding-top: 28px;
@@ -49,7 +50,7 @@ footer {
 #posts-page {
   display: flex;
   flex-direction: column;
-  width: min(100%, 720px);
+  width: min(100%, var(--center-box-width));
   color: var(--text);
   background: var(--bg);
 }
@@ -57,7 +58,7 @@ footer {
 #post-page {
   display: flex;
   flex-direction: column;
-  width: min(100%, 720px);
+  width: min(100%, var(--center-box-width));
   color: var(--text);
   background: var(--bg);
   text-align: left;
@@ -123,8 +124,9 @@ footer {
 }
 
 #post-page pre {
-  padding: 12px;
+  padding: 16px;
   overflow-x: auto;
+  border: 1px solid var(--muted);
 }
 
 #back-text {

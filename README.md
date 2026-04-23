@@ -32,6 +32,7 @@ email = "john.doe@gmail.com"
 github = "https://github.com/your-profile"
 desc = "Brief paragraph about you."
 footer = "© 2025 John Doe"
+theme_name = "swamp-light"
 ```
 
 ### `./posts.toml`
@@ -88,6 +89,7 @@ within `./themes/override.css`, in the root of your website's directory.
 │   └── *.md
 ├── themes/
 │   └── override.css
+├── syntax-themes/
 ├── index.toml
 ├── posts.toml
 └── projects.toml
@@ -142,9 +144,13 @@ build/
 - [x] `<dir>` flag -- chdir to given path and build there
 - [x] Syntax highlighting via `syntect`
   - [x] CSS - padding
+  - [x] Swamp Light `.tmTheme`
+    - It's not very good, but I had it lying around from my `bat` config
+  - [x] Configurable themes as part of index.toml
   - [ ] Line numbers
-  - [ ] Swamp light/dark themes OOTB
-  - [ ] Configurable themes as part of index.toml
+  - [ ] Swamp dark `.tmTheme`
+- [ ] 'Bake in' 'official' CSS & syntax themes, to remove reliance on project
+      root existing & comprising 'themes/' + 'syntax-themes/'
 - [ ] GH Pages deploy action
 - [ ] Light/dark-mode toggle
 - [ ] TOC for blog posts

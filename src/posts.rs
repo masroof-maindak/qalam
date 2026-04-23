@@ -8,10 +8,16 @@ use pulldown_cmark::{CodeBlockKind, Event, Options, Parser, Tag, TagEnd, html};
 use serde::Deserialize;
 use std::fs::read_to_string;
 use std::iter::zip;
-use syntect::{highlighting::ThemeSet, html::highlighted_html_for_string, parsing::SyntaxSet};
+use std::path::Path;
+use syntect::{
+    highlighting::{Theme, ThemeSet},
+    html::highlighted_html_for_string,
+    parsing::SyntaxSet,
+};
 
 use crate::utils;
 
+pub const THEMES_PATH: &str = "syntax-themes/";
 pub const IN_POSTS_CFG_PATH: &str = "posts.toml";
 pub const OUT_POSTS_PATH: &str = "build/posts/index.html";
 const IN_POSTS_DIR: &str = "posts/";
@@ -101,14 +107,15 @@ fn extract_metadata_and_content(
     Ok((note_md, fm))
 }
 
-pub fn generate_html_str(fpath: &Utf8Path, footer_text: &Option<String>) -> Result<String> {
+pub fn generate_html_str(
+    fpath: &Utf8Path,
+    footer_text: &Option<String>,
+    theme: &Theme,
+) -> Result<String> {
     let (note_md, fm) = extract_metadata_and_content(fpath)?;
 
     let syntax_set = SyntaxSet::load_defaults_newlines();
     let mut syntax_ref = syntax_set.find_syntax_plain_text();
-    // TODO: load from folder
-    let theme_set = ThemeSet::load_defaults();
-    let theme = theme_set.themes["base16-ocean.dark"].clone();
 
     let header_html_str = format!(
         "{}<div id=\"post-page\">{}{}",
@@ -146,7 +153,7 @@ pub fn generate_html_str(fpath: &Utf8Path, footer_text: &Option<String>) -> Resu
         Event::End(TagEnd::CodeBlock) => {
             in_code_block = false;
 
-            let html = highlighted_html_for_string(&to_highlight, &syntax_set, syntax_ref, &theme)
+            let html = highlighted_html_for_string(&to_highlight, &syntax_set, syntax_ref, theme)
                 .unwrap_or(to_highlight.clone());
 
             to_highlight.clear();
@@ -193,21 +200,53 @@ pub fn generate_out_path_vec(post_fpaths: &[Utf8PathBuf]) -> Result<Vec<Utf8Path
         .collect()
 }
 
+fn load_syntax_theme(theme_name: &str, base_path: &Path) -> Result<Theme> {
+    let rel_theme_path = Path::new(THEMES_PATH);
+    let official_theme_path = base_path.join(THEMES_PATH);
+
+    let mut theme_set = ThemeSet::new();
+
+    // Load 'official' themes
+    theme_set
+        .add_from_folder(base_path.join(&official_theme_path))
+        .with_context(|| format!("Failed to load themes from {:#?}", &official_theme_path))?;
+
+    // Load user themes, if the folder exists
+    if Path::new(rel_theme_path).exists() {
+        theme_set
+            .add_from_folder(rel_theme_path)
+            .with_context(|| format!("Failed to load themes from {:#?}", rel_theme_path))?;
+    }
+
+    if let Some(theme) = theme_set.themes.get(theme_name) {
+        Ok(theme.clone())
+    } else {
+        bail!(
+            "Theme {theme_name} not found in paths {:#?} or {:#?}",
+            rel_theme_path,
+            official_theme_path
+        );
+    }
+}
+
 pub fn generate_html_files_all_posts(
     post_fpaths: &Vec<Utf8PathBuf>,
     footer_text: &Option<String>,
+    base_path: &Path,
+    theme_name: &str,
 ) -> Result<()> {
     let post_out_fpaths = generate_out_path_vec(post_fpaths)?;
+    let theme = load_syntax_theme(theme_name, base_path)?;
 
     for (fpath, out_fpath) in zip(post_fpaths, post_out_fpaths) {
         if !fpath.is_file() {
             continue;
         }
 
-        let note_content = match generate_html_str(fpath, footer_text) {
+        let note_content = match generate_html_str(fpath, footer_text, &theme) {
             Ok(s) => s,
             Err(e) => {
-                eprintln!("Failed to convert {:#?} to HTML str {e}", &fpath);
+                eprintln!("Failed to convert {:#?} to HTML str: {e}", &fpath);
                 continue;
             }
         };
