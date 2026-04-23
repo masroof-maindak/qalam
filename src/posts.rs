@@ -149,6 +149,8 @@ pub fn generate_html_str(fpath: &Utf8Path, footer_text: &Option<String>) -> Resu
             let html = highlighted_html_for_string(&to_highlight, &syntax_set, syntax_ref, &theme)
                 .unwrap_or(to_highlight.clone());
 
+            to_highlight.clear();
+
             Some(Event::Html(html.into()))
         }
         Event::Text(t) => {
