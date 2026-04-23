@@ -2,6 +2,8 @@
   --bg: #f1e3d1;
   --text: #64513e;
   --muted: #a0907d;
+  --less-muted: #8c7b68;
+  --blockquote-fg: #786653;
   --accent: #bf7979;
   --accent2: #9e5581;
   --surface: #ddcebc;
@@ -79,11 +81,14 @@ footer {
 }
 
 #post-page #back-text,
-#post-page #back-text:hover,
-#post-page #back-text:focus-visible,
 #post-page #back-text:visited {
   color: var(--muted);
   text-decoration: none;
+}
+
+#post-page #back-text:hover,
+#post-page #back-text:focus-visible {
+  color: var(--less-muted);
 }
 
 .post-page-title {
@@ -95,12 +100,39 @@ footer {
   color: var(--muted);
 }
 
+#post-page blockquote {
+  margin: 20px 0;
+  padding: 0 0 0 16px;
+  border-left: 1px solid var(--less-muted);
+  color: var(--blockquote-fg);
+  font-weight: 300;
+}
+
+#post-page blockquote > :first-child {
+  margin-top: 0;
+}
+
+#post-page blockquote > :last-child {
+  margin-bottom: 0;
+}
+
+#post-page img {
+  display: block;
+  max-width: 100%;
+  height: auto;
+}
+
 #back-text {
   display: inline-block;
   font-size: 0.9rem;
   margin-bottom: 28px;
   color: var(--muted);
   text-decoration: none;
+}
+
+#back-text:hover,
+#back-text:focus-visible {
+  color: var(--less-muted);
 }
 
 #projects-page h1 {
@@ -149,6 +181,11 @@ footer {
 
 .post-date {
   color: var(--muted);
+}
+
+.post-row:hover .post-date,
+.post-row:focus-within .post-date {
+  color: var(--less-muted);
 }
 
 .project-item {
