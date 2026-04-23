@@ -87,9 +87,10 @@ within `./themes/override.css`, in the root of your website's directory.
 ├── img/
 ├── posts/
 │   └── *.md
+├── syntax-themes/
+│   └── *.tmTheme
 ├── themes/
 │   └── override.css
-├── syntax-themes/
 ├── index.toml
 ├── posts.toml
 └── projects.toml
@@ -148,9 +149,11 @@ build/
     - It's not very good, but I had it lying around from my `bat` config
   - [x] Configurable themes as part of index.toml
   - [ ] Line numbers
+    - Would require a PR to Syntect...
   - [ ] Swamp dark `.tmTheme`
 - [ ] 'Bake in' 'official' CSS & syntax themes, to remove reliance on project
       root existing & comprising 'themes/' + 'syntax-themes/'
+  - See: <https://github.com/RMHEDGE/rust-embed>
 - [ ] GH Pages deploy action
 - [ ] Light/dark-mode toggle
 - [ ] TOC for blog posts
