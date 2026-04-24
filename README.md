@@ -19,6 +19,12 @@ cargo install --path .
 qalam <dir> # '.' by default
 ```
 
+## Development
+
+Note that it is essential that the project is run from the program root while in
+debug mode. This is required because of the splendid `rust-embed` crate, that
+allows us to 'bake in' the required theme files into the output binary.
+
 ## Configuration
 
 ### `./index.toml`
@@ -151,7 +157,7 @@ build/
   - [ ] Line numbers
     - Would require a PR to Syntect...
   - [ ] Swamp dark `.tmTheme`
-- [ ] 'Bake in' 'official' CSS & syntax themes, to remove reliance on project
+- [x] 'Bake in' 'official' CSS & syntax themes, to remove reliance on project
       root existing & comprising 'themes/' + 'syntax-themes/'
   - See: <https://github.com/RMHEDGE/rust-embed>
 - [ ] GH Pages deploy action

@@ -1,14 +1,13 @@
 use anyhow::{Context, Result};
 use std::env;
 
+pub mod embedded_files;
 pub mod home;
 pub mod posts;
 pub mod projects;
 pub mod utils;
 
-use utils::{
-    TomlFileType, copy_images_to_build, generate_css_with_override, parse_toml_file, write_html,
-};
+use utils::{TomlFileType, copy_images_to_build, parse_toml_file, write_html};
 
 pub const IMAGES_DIR: &str = "img/";
 pub const OUT_IMAGES_DIR: &str = "build/img/";
@@ -21,8 +20,6 @@ const OUT_DIRS: [&str; 4] = [
 ];
 
 fn main() -> Result<()> {
-    let start_path = env::current_dir()?;
-
     // Chdir if provided
     let args: Vec<String> = env::args().collect();
     if args.len() > 2 {
@@ -40,7 +37,7 @@ fn main() -> Result<()> {
     copy_images_to_build(IMAGES_DIR, &OUT_IMAGES_DIR)
         .with_context(|| format!("Failed to copy {IMAGES_DIR} to {OUT_IMAGES_DIR}"))?;
 
-    generate_css_with_override(&start_path.join(utils::CSS_PATH))
+    embedded_files::generate_css_with_override()
         .with_context(|| "Failed to generate output CSS.")?;
 
     // Homepage
@@ -58,10 +55,12 @@ fn main() -> Result<()> {
 
     // Posts
     let post_fpaths = posts::get_files_from_posts_dir()?;
+    let theme_set =
+        embedded_files::generate_theme_set().with_context(|| "Failed to generate theme set")?;
     posts::generate_html_files_all_posts(
         &post_fpaths,
         &idx_cfg.footer,
-        &start_path,
+        theme_set,
         &idx_cfg.theme_name,
     )?;
 

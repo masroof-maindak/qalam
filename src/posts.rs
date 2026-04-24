@@ -8,16 +8,11 @@ use pulldown_cmark::{CodeBlockKind, Event, Options, Parser, Tag, TagEnd, html};
 use serde::Deserialize;
 use std::fs::read_to_string;
 use std::iter::zip;
-use std::path::Path;
-use syntect::{
-    highlighting::{Theme, ThemeSet},
-    html::highlighted_html_for_string,
-    parsing::SyntaxSet,
-};
+use syntect::highlighting::ThemeSet;
+use syntect::{highlighting::Theme, html::highlighted_html_for_string, parsing::SyntaxSet};
 
-use crate::utils;
+use crate::{embedded_files::load_syntax_theme, utils};
 
-pub const THEMES_PATH: &str = "syntax-themes/";
 pub const IN_POSTS_CFG_PATH: &str = "posts.toml";
 pub const OUT_POSTS_PATH: &str = "build/posts/index.html";
 const IN_POSTS_DIR: &str = "posts/";
@@ -200,43 +195,14 @@ pub fn generate_out_path_vec(post_fpaths: &[Utf8PathBuf]) -> Result<Vec<Utf8Path
         .collect()
 }
 
-fn load_syntax_theme(theme_name: &str, base_path: &Path) -> Result<Theme> {
-    let rel_theme_path = Path::new(THEMES_PATH);
-    let official_theme_path = base_path.join(THEMES_PATH);
-
-    let mut theme_set = ThemeSet::new();
-
-    // Load 'official' themes
-    theme_set
-        .add_from_folder(base_path.join(&official_theme_path))
-        .with_context(|| format!("Failed to load themes from {:#?}", &official_theme_path))?;
-
-    // Load user themes, if the folder exists
-    if Path::new(rel_theme_path).exists() {
-        theme_set
-            .add_from_folder(rel_theme_path)
-            .with_context(|| format!("Failed to load themes from {:#?}", rel_theme_path))?;
-    }
-
-    if let Some(theme) = theme_set.themes.get(theme_name) {
-        Ok(theme.clone())
-    } else {
-        bail!(
-            "Theme {theme_name} not found in paths {:#?} or {:#?}",
-            rel_theme_path,
-            official_theme_path
-        );
-    }
-}
-
 pub fn generate_html_files_all_posts(
     post_fpaths: &Vec<Utf8PathBuf>,
     footer_text: &Option<String>,
-    base_path: &Path,
+    theme_set: ThemeSet,
     theme_name: &str,
 ) -> Result<()> {
     let post_out_fpaths = generate_out_path_vec(post_fpaths)?;
-    let theme = load_syntax_theme(theme_name, base_path)?;
+    let theme = load_syntax_theme(theme_set, theme_name)?;
 
     for (fpath, out_fpath) in zip(post_fpaths, post_out_fpaths) {
         if !fpath.is_file() {

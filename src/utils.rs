@@ -1,21 +1,15 @@
-use crate::{home, posts, projects};
-// use ammonia;
-
 use anyhow::{Context, Result, bail};
 use camino::Utf8Path;
 use maud::{DOCTYPE, Markup, html};
-use std::fs::{self, OpenOptions};
-use std::io::Write;
+use std::fs;
 use std::path::Path;
 
-const OVERRIDE_CSS_PATH: &str = "themes/override.css";
+use crate::{home, posts, projects};
+
 pub const CSS_PATH: &str = "themes/styles.css";
-const OUT_CSS_PATH: &str = "build/themes/styles.css";
 const PROJECT_URL: &str = "https://github.com/masroof-maindak/qalam";
 
 pub fn write_html(html: &str, out_path: &dyn AsRef<Path>) -> Result<()> {
-    // let html = ammonia::clean(html);
-
     fs::write(out_path, html)
         .with_context(|| format!("Failed to write HTML to {:#?}", out_path.as_ref()))?;
 
@@ -130,18 +124,6 @@ pub fn copy_images_to_build(src_path: &str, dst_path: &dyn AsRef<Path>) -> Resul
             let dst = dst_path.as_ref().join(fname);
             fs::copy(entry, &dst).with_context(|| format!("Moving {entry} to {:#?}", dst))?;
         }
-    }
-
-    Ok(())
-}
-
-pub fn generate_css_with_override(base_path: &dyn AsRef<Path>) -> Result<()> {
-    fs::copy(base_path, OUT_CSS_PATH)?;
-    let override_css_path = Path::new(OVERRIDE_CSS_PATH);
-    if override_css_path.exists() {
-        let override_css = fs::read_to_string(override_css_path)?;
-        let mut f = OpenOptions::new().append(true).open(OUT_CSS_PATH)?;
-        writeln!(f, "{override_css}")?;
     }
 
     Ok(())
