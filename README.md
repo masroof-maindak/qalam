@@ -22,8 +22,9 @@ qalam <dir> # '.' by default
 ## Development
 
 Note that it is essential that the project is run from the program root while in
-debug mode. This is required because of the splendid `rust-embed` crate, that
-allows us to 'bake in' the required theme files into the output binary.
+debug mode (e.g w/ `cargo run <dir>`). This is required because of the splendid
+`rust-embed` crate, that allows us to 'bake in' the required theme files into
+the output binary.
 
 ## Configuration
 
@@ -154,19 +155,24 @@ build/
   - [x] Swamp Light `.tmTheme`
     - It's not very good, but I had it lying around from my `bat` config
   - [x] Configurable themes as part of index.toml
-  - [ ] Line numbers
-    - Would require a PR to Syntect...
-  - [ ] Swamp dark `.tmTheme`
 - [x] 'Bake in' 'official' CSS & syntax themes, to remove reliance on project
       root existing & comprising 'themes/' + 'syntax-themes/'
   - See: <https://github.com/RMHEDGE/rust-embed>
 - [ ] GH Pages deploy action
+- [ ] Swamp dark `.tmTheme`
 - [ ] Light/dark-mode toggle
+- [ ] PR Syntect for line numbers
 - [ ] TOC for blog posts
 - [ ] Post tagging via MD frontmatter & output HTML tag pages
+
+## LLM Usage Disclosure
+
+- `styles.css`
+- Converting my base16 Neovim theme to a `.tmTheme`
 
 ## Acknowledgements
 
 - [Isunjn's](https://github.com/isunjn) excellent theme for Zola,
   [serene](https://github.com/isunjn/serene), that I adored, but left solely by
-  virtue of the frequency with which it introduced breaking changes.
+  virtue of the frequency with which it, and Zola itself too, introduced
+  breaking changes.
