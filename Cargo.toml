@@ -4,7 +4,6 @@ version = "0.1.0"
 edition = "2024"
 
 [dependencies]
-ammonia = "4.1.2"
 anyhow = "1.0.102"
 camino = "1.2.2"
 chrono = "0.4.44"
