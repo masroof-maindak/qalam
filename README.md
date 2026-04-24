@@ -115,7 +115,7 @@ build/
 
 - [x] MD -> HTML
   - Using `pulldown_cmark`, but `comrak` (that I discovered much later) seems to
-    be much easier...
+    be much easier... And also seamlessly integrates w/ `syntect`
 - [x] Read posts/ dir.
 - [x] Projects page; TOML page config & project array -> HTML
   - Would we need an HTML templater like `maud`? Yes, and it's glorious.
