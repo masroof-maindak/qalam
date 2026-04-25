@@ -12,12 +12,47 @@ cargo install --path .
 
 ## Usage
 
+### Build Site
+
 ```bash
 # After completing the configuration, and ensuring you have the expected
-# directory structure...
+# directory structure, illustrated hereinafter:
 
 qalam <dir> # '.' by default
 ```
+
+### GitHub Pages Integration
+
+To auto-build and publish your site to GitHub pages upon pushing to the `main`
+branch in your blog's source code repository, add the following file under
+`.github/workflows/gh-pages.yml` in your project's root:
+
+```yml
+name: Build & Deploy
+
+on:
+  push:
+    branches: ["main"]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions-rust-lang/setup-rust-toolchain@v1
+      - run: cargo install qalam-ssg
+      - run: qalam
+      - uses: peaceiris/actions-gh-pages@v4
+        if: github.ref == 'refs/heads/main'
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./build
+```
+
+Then, in the repository's Settings menu, configure the 'Branch' to be
+`gh-pages`.
 
 ## Development
 
@@ -166,7 +201,8 @@ build/
 - [x] 'Bake in' 'official' CSS & syntax themes, to remove reliance on project
       root existing & comprising 'themes/' + 'syntax-themes/'
   - See: <https://github.com/RMHEDGE/rust-embed>
-- [ ] GH Pages deploy action
+- [x] GH Pages deploy action
+- [x] `cargo publish` workflow
 - [ ] Favicon support
 - [ ] Swamp dark `.tmTheme`
 - [ ] Light/dark-mode toggle
