@@ -50,7 +50,11 @@ fn main() -> Result<()> {
     // Projects
     let proj_cfg_file = parse_toml_file(TomlFileType::Proj, projects::IN_PROJS_CFG_PATH)
         .with_context(|| "Failed to parse projects toml file")?;
-    let projs_page_html = projects::create_html_str(&proj_cfg_file.into_proj()?, &idx_cfg.footer);
+    let projs_page_html = projects::create_html_str(
+        &proj_cfg_file.into_proj()?,
+        &idx_cfg.footer,
+        &idx_cfg.github,
+    );
     write_html(&projs_page_html, &projects::OUT_PROJ_PATH)?;
 
     // Posts

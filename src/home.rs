@@ -14,8 +14,8 @@ pub struct HomePage {
     username: String,
     bio: String,
     email: String,
-    github: String,
     desc: String,
+    pub github: String,
     pub footer: Option<String>,
     pub theme_name: String,
 }

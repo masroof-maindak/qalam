@@ -23,7 +23,7 @@ pub struct ProjectPage {
     projects: Vec<Project>,
 }
 
-pub fn create_html_str(pp: &ProjectPage, footer_text: &Option<String>) -> String {
+pub fn create_html_str(pp: &ProjectPage, footer_text: &Option<String>, github_url: &str) -> String {
     let markup = html! {
         (utils::page_header(&pp.page_title, &".."))
 
@@ -46,6 +46,8 @@ pub fn create_html_str(pp: &ProjectPage, footer_text: &Option<String>) -> String
                     }
                 }
             }
+
+            a #more-text href=(github_url) { "More →" }
         }
 
         (utils::page_footer(footer_text))
