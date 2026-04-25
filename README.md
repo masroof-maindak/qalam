@@ -2,6 +2,13 @@
 
 Swampy static site generator.
 
+<p align="center">
+  <img alt="Home" src=".github/assets/home.jpg" width="49%">
+  <img alt="Example Post" src=".github/assets/example-post.jpg" width="49%">
+  <img alt="Posts" src=".github/assets/posts.jpg" width="49%">
+  <img alt="Projects" src=".github/assets/projects.jpg" width="49%">
+</p>
+
 ## Setup
 
 ```bash
@@ -218,6 +225,6 @@ build/
 ## Acknowledgements
 
 - [Isunjn's](https://github.com/isunjn) excellent theme for Zola,
-  [serene](https://github.com/isunjn/serene), that I adored, but left solely by
-  virtue of the frequency with which it, and Zola itself too, introduced
-  breaking changes.
+  [serene](https://github.com/isunjn/serene), that I adored (and have blatantly
+  copied the design from), but left solely by virtue of the frequency with which
+  it, and Zola itself too, introduced breaking changes.
