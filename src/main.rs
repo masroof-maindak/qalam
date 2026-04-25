@@ -1,4 +1,5 @@
 use anyhow::{Context, Result};
+use camino::Utf8Path;
 use std::env;
 
 pub mod embedded_files;
@@ -9,14 +10,17 @@ pub mod utils;
 
 use utils::{TomlFileType, copy_images_to_build, parse_toml_file, write_html};
 
-pub const IMAGES_DIR: &str = "img/";
-pub const OUT_IMAGES_DIR: &str = "build/img/";
+const IMAGES_DIR: &str = "img/";
+const OUT_IMAGES_DIR: &str = "build/img/";
+const FAVICONS_DIR: &str = "favicons/";
+const OUT_FAVICONS_DIR: &str = "build/favicons/";
 
-const OUT_DIRS: [&str; 4] = [
+const OUT_DIRS: [&str; 5] = [
     posts::OUT_POSTS_DIR,
     projects::OUT_PROJ_DIR,
-    "build/themes/",
     OUT_IMAGES_DIR,
+    OUT_FAVICONS_DIR,
+    "build/themes/",
 ];
 
 fn main() -> Result<()> {
@@ -36,6 +40,11 @@ fn main() -> Result<()> {
 
     copy_images_to_build(IMAGES_DIR, &OUT_IMAGES_DIR)
         .with_context(|| format!("Failed to copy {IMAGES_DIR} to {OUT_IMAGES_DIR}"))?;
+
+    if Utf8Path::new(FAVICONS_DIR).exists() {
+        copy_images_to_build(FAVICONS_DIR, &OUT_FAVICONS_DIR)
+            .with_context(|| format!("Failed to copy {FAVICONS_DIR} to {OUT_FAVICONS_DIR}"))?;
+    }
 
     embedded_files::generate_css_with_override()
         .with_context(|| "Failed to generate output CSS.")?;

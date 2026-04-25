@@ -108,6 +108,19 @@ url = "https://github.com/masroof-maindak/qalam"
 # As many [[projects]] as you want
 ```
 
+### Favicons
+
+Qalam optionally, and nominally, supports custom favicons. Generate them using
+<https://realfavicongenerator.net/>; unzip the downloaded archive into a
+directory named 'favicons/' in the root of your website, and Qalam will handle
+the rest.
+
+Please note that _only_ the aforementioned link is 100% compatible, by virtue of
+their specific output format being catered to directly within the HTML source.
+
+In the future, we may consider developing an in-house favicon-generation
+workflow, but it's kind of overkill at the moment.
+
 ## Theming
 
 ### Site
@@ -141,6 +154,7 @@ said themes, pass the file's stem to the `theme_name` key in `index.toml`.
 
 ```txt
 .
+├── favicons/
 ├── img/
 ├── posts/
 │   └── *.md
@@ -153,10 +167,14 @@ said themes, pass the file's stem to the `theme_name` key in `index.toml`.
 └── projects.toml
 ```
 
+_Note that the 'favicons/', 'syntax-themes/' and 'themes/' directories are
+optional._
+
 ### Output
 
 ```txt
 build/
+├── favicons/
 ├── img/
 ├── posts/
 │   ├── index.html
@@ -210,7 +228,7 @@ build/
   - See: <https://github.com/RMHEDGE/rust-embed>
 - [x] GH Pages deploy action
 - [x] `cargo publish` workflow
-- [ ] Favicon support
+- [x] Favicon support -- Sort of
 - [ ] Swamp dark `.tmTheme`
 - [ ] Light/dark-mode toggle
 - [ ] PR Syntect for line numbers

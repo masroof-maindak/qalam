@@ -78,9 +78,17 @@ pub fn page_header(page_title: &str, css_path_base_dir: &dyn AsRef<Path>) -> Mar
         (DOCTYPE)
         html {
             meta charset="utf-8";
+            meta name="viewport" content="width=device-width, initial-scale=1";
             title { (page_title) }
         }
         link rel="stylesheet" type="text/css" href=(css_path.display());
+
+        // Favicon stuff
+        link rel="icon" type="image/png" href="/favicons/favicon-96x96.png" sizes="96x96";
+        link rel="icon" type="image/svg+xml" href="/favicons/favicon.svg";
+        link rel="shortcut icon" href="/favicons/favicon.ico";
+        link rel="apple-touch-icon" sizes="180x180" href="/favicons/apple-touch-icon.png";
+        link rel="manifest" href="/favicons/site.webmanifest";
     }
 }
 
@@ -111,15 +119,12 @@ pub fn page_footer(copyright_str: &Option<String>) -> Markup {
 }
 
 pub fn copy_images_to_build(src_path: &str, dst_path: &dyn AsRef<Path>) -> Result<()> {
-    fs::create_dir_all(dst_path)?;
-
     for entry in Utf8Path::new(src_path).read_dir_utf8()? {
         let entry = entry?;
         let entry = entry.path();
 
         if let Some(fname) = entry.file_name()
-            && let Some(ext) = entry.extension()
-            && ["jpg", "png", "webp"].contains(&ext)
+            && entry.is_file()
         {
             let dst = dst_path.as_ref().join(fname);
             fs::copy(entry, &dst).with_context(|| format!("Moving {entry} to {:#?}", dst))?;
