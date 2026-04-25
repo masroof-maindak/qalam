@@ -167,6 +167,7 @@ build/
       root existing & comprising 'themes/' + 'syntax-themes/'
   - See: <https://github.com/RMHEDGE/rust-embed>
 - [ ] GH Pages deploy action
+- [ ] Favicon support
 - [ ] Swamp dark `.tmTheme`
 - [ ] Light/dark-mode toggle
 - [ ] PR Syntect for line numbers
