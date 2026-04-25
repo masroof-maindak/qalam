@@ -1,6 +1,6 @@
 [package]
 name = "qalam-ssg"
-version = "1.0.2"
+version = "1.0.3"
 repository = "https://github.com/masroof-maindak/qalam"
 readme = "README.md"
 license = "MIT"
