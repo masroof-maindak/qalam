@@ -68,6 +68,8 @@ url = "https://github.com/masroof-maindak/qalam"
 
 ## Theming
 
+### Site
+
 You can change the website's colour theme by setting the following variables
 within `./themes/override.css`, in the root of your website's directory.
 
@@ -84,6 +86,12 @@ within `./themes/override.css`, in the root of your website's directory.
   --surface: #ddcebc;
 }
 ```
+
+### Syntax Themes
+
+Place your `.tmTheme` files within a 'syntax-themes/' directory in the root of
+your website. Qalam will automatically load them from here at runtime. To use
+said themes, pass the file's stem to the `theme_name` key in `index.toml`.
 
 ## Expected Directory Structure
 
