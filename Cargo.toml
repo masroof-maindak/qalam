@@ -1,6 +1,12 @@
 [package]
-name = "qalam"
-version = "0.1.0"
+name = "qalam-ssg"
+version = "1.0.0"
+repository = "https://github.com/masroof-maindak/qalam"
+readme = "README.md"
+license = "MIT"
+description = "Swampy static site generator."
+keywords = ["static", "site", "generator", "blog"]
+
 edition = "2024"
 
 [dependencies]
@@ -15,3 +21,7 @@ rust-embed = "8.11.0"
 serde = { version = "1.0.228", features = ["derive"] }
 syntect = "5.3.0"
 toml = "1.1.2"
+
+[[bin]]
+name = "qalam"
+path = "src/main.rs"
