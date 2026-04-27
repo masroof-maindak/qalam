@@ -10,8 +10,8 @@ on:
       - "Cargo.toml"
     branches: [main]
 
-    # Reference your environment variables
-    environment: cargo
+env:
+  CARGO_TERM_COLOR: always
 
 jobs:
   build:
@@ -23,14 +23,8 @@ jobs:
     steps:
       - name: Checkout source
         uses: actions/checkout@v6
-        with:
-          # get git tags info
-          fetch-depth: 0
 
       - name: Publish
-        uses: seaofvoices/rust-release-action@v1
-        with:
-          publish_crate: true
+        run: cargo publish
         env:
           CARGO_REGISTRY_TOKEN: ${{ secrets.CARGO_REGISTRY_TOKEN }}
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
