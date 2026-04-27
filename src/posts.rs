@@ -86,7 +86,7 @@ fn convert_frontmatter_to_metadata(
             }
         }
         None => bail!(
-            "[POSTS] Failed to extract frontmatter from file {:#?}",
+            "[POSTS] Failed to extract data from frontmatter {:#?}",
             &fpath
         ),
     };
@@ -212,7 +212,7 @@ pub fn generate_html_files_all_posts(
         let note_content = match generate_html_str(fpath, footer_text, &theme) {
             Ok(s) => s,
             Err(e) => {
-                eprintln!("Failed to convert {:#?} to HTML str: {e}", &fpath);
+                eprintln!("[ POSTS] Failed to convert {:#?} to HTML str {e}", &fpath);
                 continue;
             }
         };
