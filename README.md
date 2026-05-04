@@ -58,8 +58,8 @@ jobs:
           publish_dir: ./build
 ```
 
-Then, in the repository's Settings menu, configure the 'Branch' to be
-`gh-pages`.
+Then, in the repository's Settings menu, under the 'Pages' section , configure
+the 'Branch' to be `gh-pages`, and serve it from '/'.
 
 ## Development
 
@@ -148,6 +148,13 @@ Place your `.tmTheme` files within a 'syntax-themes/' directory in the root of
 your website. Qalam will automatically load them from here at runtime. To use
 said themes, pass the file's stem to the `theme_name` key in `index.toml`.
 
+Qalam currently ships with four syntax themes OOTB. These are:
+
+- swamp-light
+- swamp-dark
+- gruvbox-dark-medium
+- gruvbox-light-medium
+
 ## Expected Directory Structure
 
 ### Input
@@ -229,7 +236,7 @@ build/
 - [x] GH Pages deploy action
 - [x] `cargo publish` workflow
 - [x] Favicon support -- Sort of
-- [ ] Swamp dark `.tmTheme`
+- [x] Swamp dark `.tmTheme`
 - [ ] Light/dark-mode toggle
 - [ ] PR Syntect for line numbers
 - [ ] TOC for blog posts
@@ -238,7 +245,7 @@ build/
 ## LLM Usage Disclosure
 
 - `styles.css`
-- Converting my base16 Neovim theme to a `.tmTheme`
+- Converting my base16 Neovim (light) theme to a `.tmTheme`
 
 ## Acknowledgements
 
@@ -246,3 +253,4 @@ build/
   [serene](https://github.com/isunjn/serene), that I adored (and have blatantly
   copied the design from), but left solely by virtue of the frequency with which
   it, and Zola itself too, introduced breaking changes.
+- The [official(?) Gruvbox Dark TextMate theme](https://github.com/chriskempson/base16-textmate/blob/master/Themes/base16-gruvbox-dark-medium.tmTheme)
