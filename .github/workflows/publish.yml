@@ -1,7 +1,6 @@
 name: Publish to Cargo
 
-# Auto-generates Git tags corresponding to changes in Cargo.toml, and publishes
-# to crates.io
+# Publishes Qalam to crates.io upon detecting a change in Cargo.toml
 
 on:
   workflow_dispatch:
