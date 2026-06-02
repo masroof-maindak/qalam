@@ -61,6 +61,25 @@ jobs:
 Then, in the repository's Settings menu, under the 'Pages' section , configure
 the 'Branch' to be `gh-pages`, and serve it from '/'.
 
+### Frontmatter
+
+Every markdown file must start w/ the following:
+
+```markdown
+---
+title = "Big Note Title"
+date = 2026-06-02
+draft = true
+---
+
+<!-- Your other text... -->
+```
+
+The date and title are displayed on the posts index page, and the 'draft' flag
+decides whether a page is listed there or not. Note that the document is
+converted to HTML regardless, and can still be accessed through
+`<url>/posts/<md-file-stem>.html`.
+
 ## Development
 
 Note that it is essential that the project is run from the program root while in
@@ -237,6 +256,8 @@ build/
 - [x] `cargo publish` workflow
 - [x] Favicon support -- Sort of
 - [x] Swamp dark `.tmTheme`
+- [x] Add 'draft: bool' to post's YAML frontmatter
+- [ ] Render maths HTML via the `katex-rs` crate
 - [ ] Light/dark-mode toggle
 - [ ] PR Syntect for line numbers
 - [ ] TOC for blog posts
@@ -253,4 +274,5 @@ build/
   [serene](https://github.com/isunjn/serene), that I adored (and have blatantly
   copied the design from), but left solely by virtue of the frequency with which
   it, and Zola itself too, introduced breaking changes.
-- The [official(?) Gruvbox Dark TextMate theme](https://github.com/chriskempson/base16-textmate/blob/master/Themes/base16-gruvbox-dark-medium.tmTheme)
+- The
+  [official(?) Gruvbox Dark TextMate theme](https://github.com/chriskempson/base16-textmate/blob/master/Themes/base16-gruvbox-dark-medium.tmTheme)

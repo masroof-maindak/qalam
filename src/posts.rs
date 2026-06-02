@@ -30,12 +30,14 @@ pub struct PostsPage {
 struct FrontMatter {
     title: String,
     date: String, // toml::value::Date doesn't work for some reason. At least not for my desired format (YYYY-MM-DD), which is all I tested.
+    draft: bool,
 }
 
 struct NoteMetadata {
     // Generated from FrontMatter
     title: String,
     date: chrono::NaiveDate,
+    draft: bool,
 }
 
 pub fn get_files_from_posts_dir() -> Result<Vec<Utf8PathBuf>> {
@@ -83,6 +85,7 @@ fn convert_frontmatter_to_metadata(
             NoteMetadata {
                 title: fm.title.clone(),
                 date: naive_date,
+                draft: fm.draft
             }
         }
         None => bail!(
@@ -259,9 +262,11 @@ pub fn create_index_html_str(
 
             div .post-list {
                 @for (rel_url, md) in out_path_metadata_it {
-                    div .post-row {
-                        a .post-list-entry href={(rel_url)} {(md.0.title)}
-                        span .post-date {(md.0.date)}
+                    @if !md.0.draft {
+                        div .post-row {
+                            a .post-list-entry href={(rel_url)} {(md.0.title)}
+                            span .post-date {(md.0.date)}
+                        }
                     }
                 }
             }
