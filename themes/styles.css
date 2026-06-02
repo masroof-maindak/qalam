@@ -101,6 +101,21 @@ footer {
   color: var(--muted);
 }
 
+.post-page-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 20px;
+}
+
+.post-page-tag {
+  color: var(--muted);
+  border: 2px dashed var(--muted);
+  padding: 4px 8px;
+  font-size: 0.9rem;
+  white-space: nowrap;
+}
+
 #post-page blockquote {
   margin: 20px 0;
   padding: 0 0 0 16px;

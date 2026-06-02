@@ -70,6 +70,7 @@ Every markdown file must start w/ the following:
 title = "Big Note Title"
 date = 2026-06-02
 draft = true
+tags = []
 ---
 
 <!-- Your other text... -->
@@ -258,12 +259,13 @@ build/
 - [x] Swamp dark `.tmTheme`
 - [x] Add 'draft: bool' to post's YAML frontmatter
 - [x] Render maths HTML via the `katex-rs` crate
+- [x] Post tagging via MD frontmatter
 - [ ] CHECK: `---` to add line separators & bold inside blockquotes doesn't work
 - [ ] Fix FOUC?
 - [ ] Light/dark-mode toggle
 - [ ] PR Syntect for line numbers
 - [ ] TOC for blog posts
-- [ ] Post tagging via MD frontmatter & output HTML tag pages
+- [ ] Output HTML tag pages
 
 ## LLM Usage Disclosure
 

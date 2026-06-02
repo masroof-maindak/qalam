@@ -32,6 +32,7 @@ struct FrontMatter {
     title: String,
     date: String, // toml::value::Date doesn't work for some reason. At least not for my desired format (YYYY-MM-DD), which is all I tested.
     draft: bool,
+    tags: Vec<String>,
 }
 
 struct NoteMetadata {
@@ -39,6 +40,7 @@ struct NoteMetadata {
     title: String,
     date: chrono::NaiveDate,
     draft: bool,
+    tags: Vec<String>,
 }
 
 pub fn get_files_from_posts_dir() -> Result<Vec<Utf8PathBuf>> {
@@ -65,7 +67,7 @@ fn extract_frontmatter(fpath: &Utf8Path) -> Result<ParsedEntity<FrontMatter>> {
     let matter = Matter::<TOML>::new();
     let md_doc = matter
         .parse::<FrontMatter>(&markdown_input)
-        .with_context(|| format!("[POSTS] Failed to extract frontmatter from {:?}", fpath))?;
+        .with_context(|| format!("Failed to extract frontmatter from {:?}", fpath))?;
     Ok(md_doc)
 }
 
@@ -87,6 +89,7 @@ fn convert_frontmatter_to_metadata(
                 title: fm.title.clone(),
                 date: naive_date,
                 draft: fm.draft,
+                tags: fm.tags.clone(),
             }
         }
         None => bail!(
@@ -134,7 +137,14 @@ pub fn generate_html_str(
         html! {
             h1 .post-page-title {(note_md.title)}
             span .post-page-date {(note_md.date)}
-            // TODO: print tags
+
+            @if note_md.tags.len() > 1 {
+                div .post-page-tags {
+                    @for tag in note_md.tags {
+                        span .post-page-tag {(tag)};
+                    }
+                }
+            }
         }
         .into_string()
     );
@@ -245,7 +255,7 @@ pub fn generate_html_files_all_posts(
         let note_content = match generate_html_str(fpath, footer_text, &theme) {
             Ok(s) => s,
             Err(e) => {
-                eprintln!("[ POSTS] Failed to convert {:#?} to HTML str {e}", &fpath);
+                eprintln!("Failed to convert {:#?} to HTML str: {e}", &fpath);
                 continue;
             }
         };
