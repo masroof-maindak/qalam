@@ -213,7 +213,7 @@ build/
 └── index.html
 ```
 
-## TODO
+## Features/Goals/TODOs
 
 - [x] MD -> HTML
   - Using `pulldown_cmark`, but `comrak` (that I discovered much later) seems to
@@ -260,14 +260,16 @@ build/
 - [x] Add 'draft: bool' to post's YAML frontmatter
 - [x] Render maths HTML via the `katex-rs` crate
 - [x] Post tagging via MD frontmatter
-- [ ] CHECK: `---` to add line separators & bold inside blockquotes doesn't work
-- [ ] Build & serve flags
+- [x] Fix `---` to add line separators & bold inside blockquotes doesn't work
+- [ ] Scrap `katex-rs` and include (link) mathjax/katex in HTML output based on
+      post-page level boolean; <https://github.com/katex-rs/katex-rs/issues/31>
+- [ ] `build` & `serve` flags
   - `notify-rs` should help
-- [ ] Fix FOUC?
+- [ ] Output HTML tag pages
 - [ ] Light/dark-mode toggle
+- [ ] Fix FOUC?
 - [ ] PR Syntect for line numbers
 - [ ] TOC for blog posts
-- [ ] Output HTML tag pages
 
 ## LLM Usage Disclosure
 
