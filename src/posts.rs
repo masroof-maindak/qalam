@@ -138,7 +138,7 @@ pub fn generate_html_str(
             h1 .post-page-title {(note_md.title)}
             span .post-page-date {(note_md.date)}
 
-            @if note_md.tags.len() > 1 {
+            @if note_md.tags.len() > 0 {
                 div .post-page-tags {
                     @for tag in note_md.tags {
                         span .post-page-tag {(tag)};
