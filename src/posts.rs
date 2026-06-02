@@ -3,6 +3,7 @@ use camino::{Utf8Path, Utf8PathBuf};
 use chrono::NaiveDate;
 use gray_matter::{Matter, ParsedEntity, engine::TOML};
 use itertools::Itertools;
+use katex::{KatexContext, Settings, TrustSetting, render_to_string};
 use maud::html;
 use pulldown_cmark::{CodeBlockKind, Event, Options, Parser, Tag, TagEnd, html};
 use serde::Deserialize;
@@ -85,7 +86,7 @@ fn convert_frontmatter_to_metadata(
             NoteMetadata {
                 title: fm.title.clone(),
                 date: naive_date,
-                draft: fm.draft
+                draft: fm.draft,
             }
         }
         None => bail!(
@@ -112,9 +113,20 @@ pub fn generate_html_str(
 ) -> Result<String> {
     let (note_md, fm) = extract_metadata_and_content(fpath)?;
 
+    // Syntax highlighting
     let syntax_set = SyntaxSet::load_defaults_newlines();
     let mut syntax_ref = syntax_set.find_syntax_plain_text();
 
+    // KaTeX
+    let ctx = KatexContext::default();
+    let mut settings = Settings::builder()
+        .output(katex::OutputFormat::Mathml)
+        .size_multiplier(2.0)
+        .strict(katex::StrictSetting::Mode(katex::StrictMode::Warn))
+        .trust(TrustSetting::Bool(true))
+        .build();
+
+    // Header & footer HTML
     let header_html_str = format!(
         "{}<div id=\"post-page\">{}{}",
         utils::page_header(&note_md.title, &"..").into_string(),
@@ -128,7 +140,6 @@ pub fn generate_html_str(
     );
     let footer_html_str = format!("</div>{}", utils::page_footer(footer_text).into_string());
 
-    let mut note_content: String = header_html_str;
     let mut to_highlight = String::new();
     let mut in_code_block = false;
 
@@ -158,6 +169,24 @@ pub fn generate_html_str(
 
             Some(Event::Html(html.into()))
         }
+        Event::InlineMath(m) => {
+            settings.display_mode = false;
+            if let Ok(html) = katex::render_to_string(&ctx, &m, &settings) {
+                Some(Event::InlineHtml(html.into()))
+            } else {
+                eprintln!("Failed to render {m} to math HTML in {fpath}.");
+                Some(Event::InlineMath(m))
+            }
+        }
+        Event::DisplayMath(m) => {
+            settings.display_mode = true;
+            if let Ok(html) = render_to_string(&ctx, &m, &settings) {
+                Some(Event::Html(html.into()))
+            } else {
+                eprintln!("Failed to render {m} to math HTML in {fpath}.");
+                Some(Event::DisplayMath(m))
+            }
+        }
         Event::Text(t) => {
             if in_code_block {
                 to_highlight.push_str(&t);
@@ -169,6 +198,7 @@ pub fn generate_html_str(
         _ => Some(event),
     });
 
+    let mut note_content: String = header_html_str;
     html::push_html(&mut note_content, parser);
     Ok(note_content + &footer_html_str)
 }

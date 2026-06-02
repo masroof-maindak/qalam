@@ -257,7 +257,7 @@ build/
 - [x] Favicon support -- Sort of
 - [x] Swamp dark `.tmTheme`
 - [x] Add 'draft: bool' to post's YAML frontmatter
-- [ ] Render maths HTML via the `katex-rs` crate
+- [x] Render maths HTML via the `katex-rs` crate
 - [ ] CHECK: `---` to add line separators & bold inside blockquotes doesn't work
 - [ ] Fix FOUC?
 - [ ] Light/dark-mode toggle
