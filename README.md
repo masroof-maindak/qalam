@@ -258,6 +258,8 @@ build/
 - [x] Swamp dark `.tmTheme`
 - [x] Add 'draft: bool' to post's YAML frontmatter
 - [ ] Render maths HTML via the `katex-rs` crate
+- [ ] CHECK: `---` to add line separators & bold inside blockquotes doesn't work
+- [ ] Fix FOUC?
 - [ ] Light/dark-mode toggle
 - [ ] PR Syntect for line numbers
 - [ ] TOC for blog posts
