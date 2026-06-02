@@ -38,14 +38,17 @@ fn main() -> Result<()> {
         std::fs::create_dir_all(d).with_context(|| format!("Failed to create_dir {}", d))?;
     }
 
+    // Images
     copy_images_to_build(IMAGES_DIR, &OUT_IMAGES_DIR)
         .with_context(|| format!("Failed to copy {IMAGES_DIR} to {OUT_IMAGES_DIR}"))?;
 
+    // Favicons
     if Utf8Path::new(FAVICONS_DIR).exists() {
         copy_images_to_build(FAVICONS_DIR, &OUT_FAVICONS_DIR)
             .with_context(|| format!("Failed to copy {FAVICONS_DIR} to {OUT_FAVICONS_DIR}"))?;
     }
 
+    // Override CSS
     embedded_files::generate_css_with_override()
         .with_context(|| "Failed to generate output CSS.")?;
 

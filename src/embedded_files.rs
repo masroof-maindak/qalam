@@ -20,6 +20,7 @@ const OVERRIDE_CSS_PATH: &str = "themes/override.css";
 const THEMES_PATH: &str = "syntax-themes/";
 
 pub fn generate_css_with_override() -> Result<()> {
+    // let styles_css_text = include_str!("../themes/styles.css");
     let styles_css =
         ThemesDir::get("styles.css").expect("Failed to find styles.css file in ThemesDir");
     let styles_css_text = str::from_utf8(&styles_css.data)?;

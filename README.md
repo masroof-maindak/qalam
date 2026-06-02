@@ -261,6 +261,8 @@ build/
 - [x] Render maths HTML via the `katex-rs` crate
 - [x] Post tagging via MD frontmatter
 - [ ] CHECK: `---` to add line separators & bold inside blockquotes doesn't work
+- [ ] Build & serve flags
+  - `notify-rs` should help
 - [ ] Fix FOUC?
 - [ ] Light/dark-mode toggle
 - [ ] PR Syntect for line numbers
