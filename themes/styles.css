@@ -46,6 +46,14 @@ footer {
   text-align: left;
 }
 
+hr {
+  border: none;
+  height: 1px;
+  background-color: var(--less-muted) !important;
+  margin: 1.5em auto;
+  width: 75%;
+}
+
 #projects-page,
 #posts-page {
   display: flex;
@@ -122,6 +130,11 @@ footer {
   border-left: 1px solid var(--less-muted);
   color: var(--blockquote-fg);
   font-weight: 300;
+}
+
+#post-page blockquote strong, 
+#post-page blockquote b {
+  font-weight: 600;
 }
 
 #post-page blockquote > :first-child {
