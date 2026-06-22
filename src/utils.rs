@@ -1,6 +1,6 @@
 use anyhow::{Context, Result, bail};
 use camino::Utf8Path;
-use maud::{DOCTYPE, Markup, html};
+use maud::{DOCTYPE, Markup, PreEscaped, html};
 use std::fs;
 use std::path::Path;
 
@@ -71,7 +71,11 @@ pub fn parse_toml_file(tf: TomlFileType, path: &str) -> Result<TomlCfg> {
     }
 }
 
-pub fn page_header(page_title: &str, css_path_base_dir: &dyn AsRef<Path>) -> Markup {
+pub fn page_header(
+    page_title: &str,
+    css_path_base_dir: &dyn AsRef<Path>,
+    load_katex: bool,
+) -> Markup {
     let css_path = css_path_base_dir.as_ref().join(CSS_PATH);
 
     html! {
@@ -89,6 +93,42 @@ pub fn page_header(page_title: &str, css_path_base_dir: &dyn AsRef<Path>) -> Mar
         link rel="shortcut icon" href="/favicons/favicon.ico";
         link rel="apple-touch-icon" sizes="180x180" href="/favicons/apple-touch-icon.png";
         link rel="manifest" href="/favicons/site.webmanifest";
+
+        // Math
+        @if load_katex {
+            style {r#"
+                .math-display {
+                    text-align: center;
+                    display: block;
+                }
+            "#}
+
+            link rel="stylesheet"
+                href="https://cdn.jsdelivr.net/npm/katex@0.17.0/dist/katex.min.css"
+                integrity="sha384-vlBdW0r3AcZO/HboRPznQNowvexd3fY8qHOWkBi5q7KGgqJ+F48+DceybYmrVbmB"
+                crossorigin="anonymous";
+
+            script
+                defer
+                src="https://cdn.jsdelivr.net/npm/katex@0.17.0/dist/katex.min.js"
+                integrity="sha384-AtrdNsnxl/75rvBneBVH7DtOvCxSVahR2zWqle1coBKd8DEmLoviqNeJSx64gNAs"
+                crossorigin="anonymous" {}
+
+            script {
+                (PreEscaped(r#"
+                    document.addEventListener("DOMContentLoaded", () => {
+                        // Source - https://stackoverflow.com/a/49722406
+                        // Posted by dactyrafficle, modified by community. See post 'Timeline' for change history
+                        // Retrieved 2026-06-23, License - CC BY-SA 4.0
+                        var math = document.getElementsByClassName('math');
+                        for (var i = 0; i < math.length; i++) {
+                          katex.render(math[i].textContent, math[i]);
+                        }
+                    })
+                "#)
+                )
+            };
+        }
     }
 }
 

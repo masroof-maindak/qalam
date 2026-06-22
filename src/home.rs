@@ -24,7 +24,7 @@ pub fn create_html_str(hp: &HomePage) -> String {
     let email_href = format!("mailto:{}", hp.email);
 
     let markup = html! {
-        (utils::page_header(&hp.page_title, &"."))
+        (utils::page_header(&hp.page_title, &".", false))
 
         section #home-info {
             img src=(AVATAR_PATH) alt={"Avatar"};

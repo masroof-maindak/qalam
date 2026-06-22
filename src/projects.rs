@@ -25,7 +25,7 @@ pub struct ProjectPage {
 
 pub fn create_html_str(pp: &ProjectPage, footer_text: &Option<String>, github_url: &str) -> String {
     let markup = html! {
-        (utils::page_header(&pp.page_title, &".."))
+        (utils::page_header(&pp.page_title, &"..", false))
 
         div #projects-page {
             (utils::goto_home_link())

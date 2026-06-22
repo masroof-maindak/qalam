@@ -3,7 +3,6 @@ use camino::{Utf8Path, Utf8PathBuf};
 use chrono::NaiveDate;
 use gray_matter::{Matter, ParsedEntity, engine::TOML};
 use itertools::Itertools;
-use katex::{KatexContext, Settings, TrustSetting, render_to_string};
 use maud::html;
 use pulldown_cmark::{CodeBlockKind, Event, Options, Parser, Tag, TagEnd, html};
 use serde::Deserialize;
@@ -116,43 +115,15 @@ pub fn generate_html_str(
 ) -> Result<String> {
     let (note_md, fm) = extract_metadata_and_content(fpath)?;
 
+    let mut math_encountered = false;
+
     // Syntax highlighting
     let syntax_set = SyntaxSet::load_defaults_newlines();
     let mut syntax_ref = syntax_set.find_syntax_plain_text();
-
-    // KaTeX
-    let ctx = KatexContext::default();
-    let mut settings = Settings::builder()
-        .output(katex::OutputFormat::Mathml)
-        .size_multiplier(2.0)
-        .strict(katex::StrictSetting::Mode(katex::StrictMode::Warn))
-        .trust(TrustSetting::Bool(true))
-        .build();
-
-    // Header & footer HTML
-    let header_html_str = format!(
-        "{}<div id=\"post-page\">{}{}",
-        utils::page_header(&note_md.title, &"..").into_string(),
-        utils::goto_posts_link().into_string(),
-        html! {
-            h1 .post-page-title {(note_md.title)}
-            span .post-page-date {(note_md.date)}
-
-            @if note_md.tags.len() > 0 {
-                div .post-page-tags {
-                    @for tag in note_md.tags {
-                        span .post-page-tag {(tag)};
-                    }
-                }
-            }
-        }
-        .into_string()
-    );
-    let footer_html_str = format!("</div>{}", utils::page_footer(footer_text).into_string());
-
     let mut to_highlight = String::new();
     let mut in_code_block = false;
 
+    // Create post body
     let parser = Parser::new_ext(&fm.content, Options::all()).filter_map(|event| match event {
         Event::Start(Tag::CodeBlock(kind)) => {
             in_code_block = true;
@@ -180,22 +151,12 @@ pub fn generate_html_str(
             Some(Event::Html(html.into()))
         }
         Event::InlineMath(m) => {
-            settings.display_mode = false;
-            if let Ok(html) = katex::render_to_string(&ctx, &m, &settings) {
-                Some(Event::InlineHtml(html.into()))
-            } else {
-                eprintln!("Failed to render {m} to math HTML in {fpath}.");
-                Some(Event::InlineMath(m))
-            }
+            math_encountered = true;
+            Some(Event::InlineMath(m))
         }
         Event::DisplayMath(m) => {
-            settings.display_mode = true;
-            if let Ok(html) = render_to_string(&ctx, &m, &settings) {
-                Some(Event::Html(html.into()))
-            } else {
-                eprintln!("Failed to render {m} to math HTML in {fpath}.");
-                Some(Event::DisplayMath(m))
-            }
+            math_encountered = true;
+            Some(Event::DisplayMath(m))
         }
         Event::Text(t) => {
             if in_code_block {
@@ -207,10 +168,31 @@ pub fn generate_html_str(
         }
         _ => Some(event),
     });
+    let mut body_html_str = String::default();
+    html::push_html(&mut body_html_str, parser);
 
-    let mut note_content: String = header_html_str;
-    html::push_html(&mut note_content, parser);
-    Ok(note_content + &footer_html_str)
+    // Header & footer HTML
+    let header_html_str = format!(
+        "{}<div id=\"post-page\">{}{}",
+        utils::page_header(&note_md.title, &"..", math_encountered).into_string(),
+        utils::goto_posts_link().into_string(),
+        html! {
+            h1 .post-page-title {(note_md.title)}
+            span .post-page-date {(note_md.date)}
+
+            @if note_md.tags.len() > 0 {
+                div .post-page-tags {
+                    @for tag in note_md.tags {
+                        span .post-page-tag {(tag)};
+                    }
+                }
+            }
+        }
+        .into_string()
+    );
+    let footer_html_str = format!("</div>{}", utils::page_footer(footer_text).into_string());
+
+    Ok(header_html_str + &body_html_str + &footer_html_str)
 }
 
 fn extract_stem_from_fpath(fpath: &Utf8PathBuf) -> Result<&str> {
@@ -292,7 +274,7 @@ pub fn create_index_html_str(
         .rev();
 
     let markup = html! {
-        (utils::page_header(&pp.page_title, &".."))
+        (utils::page_header(&pp.page_title, &"..", false))
 
         div #posts-page {
             (utils::goto_home_link())

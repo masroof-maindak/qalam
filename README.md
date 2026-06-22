@@ -261,7 +261,7 @@ build/
 - [x] Render maths HTML via the `katex-rs` crate
 - [x] Post tagging via MD frontmatter
 - [x] Fix `---` to add line separators & bold inside blockquotes doesn't work
-- [ ] Scrap `katex-rs` and include (link) mathjax/katex in HTML output based on
+- [x] Scrap `katex-rs` and include (link) mathjax/katex in HTML output based on
       post-page level boolean; <https://github.com/katex-rs/katex-rs/issues/31>
 - [ ] `build` & `serve` flags
   - `notify-rs` should help
